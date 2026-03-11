@@ -1,0 +1,28 @@
+
+.container{
+    background-color: var(--color-alt);
+    width: 500vh ;
+    height: 100vh;
+    display: flex;
+    flex-direction: column  ;
+    justify-content: center; 
+    align-items: center; 
+}
+.data, .login-button{
+    margin: 20px;
+    border-radius: 20px;
+    width: 260px;
+    height: 50px;
+    border: none;
+}
+.data{
+    background-color: var(--color-back);
+    padding-left: 20px;
+	font-size: 1.1em;
+}
+
+.login-button {
+    background-color: var(--color-accent);
+	color: var(--color-font);
+	font-size: 1.2em;
+}
