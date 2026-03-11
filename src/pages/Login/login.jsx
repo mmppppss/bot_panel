@@ -21,7 +21,7 @@ export function Login(){
         <div className="flex flex-col items-center justify-center w-full h-screen bg-[var(--color-alt)]">
     <input 
         type="text" 
-        className="m-5 rounded-[20px] w-[260px] h-[50px] border-none bg-[var(--color-back)] pl-5 text-[1.1em] outline-none" 
+        className="m-5 rounded-[20px] w-[260px] h-[50px] border-none bg-[var(--color-back)] pl-5 text-sm font-light outline-none" 
         placeholder="email"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
@@ -29,14 +29,14 @@ export function Login(){
 
     <input 
         type="password" 
-        className="m-5 rounded-[20px] w-[260px] h-[50px] border-none bg-[var(--color-back)] pl-5 text-[1.1em] outline-none" 
+        className="m-5 rounded-[20px] w-[260px] h-[50px] border-none bg-[var(--color-back)] pl-5 text-sm font-light outline-none" 
         placeholder="password"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
     />       
 
     <button 
-        className="m-5 rounded-[20px] w-[260px] h-[50px] border-none bg-[var(--color-accent)] text-[var(--color-font)] text-[1.2em] cursor-pointer hover:opacity-90 transition-opacity"
+        className="m-5 rounded-[20px] w-[260px] h-[50px] border-none bg-[var(--color-accent)] text-[var(--color-font)] text-base font-medium cursor-pointer hover:opacity-90 transition-opacity"
         onClick={handleLogin}
     >
         Iniciar
