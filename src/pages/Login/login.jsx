@@ -39,7 +39,7 @@ export function Login() {
                 className="m-5 rounded-[20px] w-[260px] h-[50px] border-none bg-[var(--color-accent)] text-[var(--color-font)] text-base font-medium cursor-pointer hover:opacity-90 transition-opacity"
                 onClick={handleLogin}
             >
-                Iniciar
+                INICIAR
             </button>
         </div>
     )
