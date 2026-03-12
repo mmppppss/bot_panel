@@ -6,4 +6,6 @@ export const loginUser = (email, password) => {
     password
   });
 };
-
+export const registerUser = (data) => {
+  return apiRequest("auth/register", "POST", data);
+};

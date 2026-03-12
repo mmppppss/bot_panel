@@ -1,16 +1,17 @@
-@import "tailwindcss";	
+@import "tailwindcss";
 @import url('https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,200;1,200&display=swap');
+
 :root {
-	--color-accent: #82AF6E;
-	--color-font: #2F3E36;
+	--color-accent: #2f3e36;
+	--color-font: #a68552;
 	--color-back: #D9D9D9;
-	--color-alt: #C8CEBF;
+	--color-alt: #b2b8af;
 	font-family: "Josefin Sans", sans-serif;
 	font-optical-sizing: auto;
 	font-weight: 800;
 	font-style: normal;
 
-	color: var(--color-font);
+	color: var(--color-accent);
 	background-color: var(--color-back);
 
 	font-synthesis: none;
