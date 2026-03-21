@@ -1,6 +1,9 @@
 import { useState } from "react"
+import { useLocation } from 'preact-iso';
 
 export function Register() {
+    const { route } = useLocation()
+
     const [email, setEmail] = useState("")
     const [telefono, setTelefono] = useState("")
     const [nombre, setNombre] = useState("")
@@ -15,7 +18,7 @@ export function Register() {
             return
         }
         const data = { email, telefono, nombre, ci, password }
-        console.log(data)
+        route("/login")
     }
 
     return (
@@ -78,6 +81,13 @@ export function Register() {
                         Create
                     </button>
                 </div>
+
+                <p 
+                    className="mt-4 text-sm text-[var(--color-accent)] cursor-pointer hover:underline"
+                    onClick={() => route("/login")}
+                >
+                    ¿Ya tienes cuenta? Inicia sesión
+                </p>
 
                 {/* Texto inferior */}
                 <p className="mt-6 text-xs text-[var(--color-accent)] cursor-pointer hover:underline">

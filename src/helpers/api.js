@@ -1,22 +1,40 @@
-const API_URL = "http://localhost:3000/api/v1/";//cambiar a env
+const API_URL = "http://localhost:3000/api/v1/";
 
-export const apiRequest = async (endpoint, method = "GET", data = null, token=null) => {
+export const apiRequest = async (endpoint, method = "GET", data = null, token = null) => {
+  const headers = {
+    "Content-Type": "application/json"
+  };
+
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
+
   const options = {
     method,
-    headers: {
-      "Content-Type": "application/json"
-    }
+    headers
   };
+
   if (data) {
     options.body = JSON.stringify(data);
   }
+
   try {
-    const response = await fetch(`${API_URL}${endpoint}`, options);    
-    console.log(response);
+    const response = await fetch(`${API_URL}${endpoint}`, options);
     
-    const result = await response.json();
+    const text = await response.text();
+    if (!text) {
+      throw new Error("Respuesta vacía del servidor");
+    }
+    
+    const result = JSON.parse(text);
+
+    if (!response.ok) {
+      throw new Error(result.message || result.error || `Error ${response.status}`);
+    }
+
     return result;
   } catch (error) {
     console.error("Error en la API:", error);
+    throw error;
   }
 };

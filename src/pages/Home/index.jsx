@@ -1,26 +1,18 @@
-import preactLogo from '../../assets/preact.svg';
+import { useLocation } from 'preact-iso';
+import { Menu } from '../Menu/Close_menu.jsx';
 import './style.css';
 
 export function Home() {
+    const { route } = useLocation()
 	const token = localStorage.getItem("token")
-	// validar el token
 	if(!token){
-		window.location.href = "/login"
+		route("/login")
+		return null
 	}
 
 	return (
 		<div class="home">
-			holax
-
+			<Menu />
 		</div>
-	);
-}
-
-function Resource(props) {
-	return (
-		<a href={props.href} target="_blank" class="resource">
-			<h2>{props.title}</h2>
-			<p>{props.description}</p>
-		</a>
 	);
 }
