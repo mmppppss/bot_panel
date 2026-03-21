@@ -1,11 +1,10 @@
 const API_URL = "http://localhost:3000/api/v1/";//cambiar a env
 
-export const apiRequest = async (endpoint, method = "GET", data = null, token) => {
+export const apiRequest = async (endpoint, method = "GET", data = null, token=null) => {
   const options = {
     method,
     headers: {
-      "Content-Type": "application/json",
-      "token": token
+      "Content-Type": "application/json"
     }
   };
   if (data) {
@@ -13,6 +12,8 @@ export const apiRequest = async (endpoint, method = "GET", data = null, token) =
   }
   try {
     const response = await fetch(`${API_URL}${endpoint}`, options);    
+    console.log(response);
+    
     const result = await response.json();
     return result;
   } catch (error) {
