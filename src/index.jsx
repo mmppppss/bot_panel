@@ -5,6 +5,7 @@ import { Home } from './pages/Home/index.jsx';
 import { NotFound } from './pages/_404.jsx';
 import { Login } from './pages/Login/login.jsx';
 import { Register } from './pages/Register/register.jsx';
+import { Menu } from './pages/Menu/Close_menu.jsx';
 import './style.css';
 export function App() {
 
@@ -19,6 +20,8 @@ export function App() {
 					<Route default component={NotFound} />
 					<Route path="/login"  component={Login}/>
 					<Route path="register" component={Register}/>
+					<Route path="Close_menu" component={Menu}/>
+				
 				</Router>
 			</main>
 		</LocationProvider>
