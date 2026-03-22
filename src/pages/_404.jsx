@@ -2,7 +2,7 @@ export function NotFound() {
 	return (
 		<section>
 			<h1>404: Not Found</h1>
-			<p>It's gone :(</p>
+			<p>Esta pagina no existe</p>
 		</section>
 	);
 }
