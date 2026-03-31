@@ -5,7 +5,7 @@ import { Home } from './pages/Home/index.jsx';
 import { NotFound } from './pages/_404.jsx';
 import { Login } from './pages/Login/login.jsx';
 import { Register } from './pages/Register/register.jsx';
-import { Menu } from './pages/Menu/Close_menu.jsx';
+import { Menu } from './components/menu.jsx';
 import { NotifyProvider, NotifyContainer } from './components/Notify/NotifyContext.jsx';
 import './style.css';
 
