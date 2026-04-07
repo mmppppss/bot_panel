@@ -20,43 +20,49 @@ export function Menu() {
                 </button>
 
             </div>
+
             {open && (
                 <div
                     className="fixed inset-0 bg-black/20 z-40"
-
                 />
-            )}<div className={`flex flex-col fixed top-0 left-0 h-full bg-[var(--color-alt)] z-50 transition-all duration-300 ${open ? "w-64" : "w-20"}`}>
+            )}
 
-                {/* Botón para cerrar (Solo visible si está abierto, o cambia el icono) */}
-                <div className="flex justify-end items-center h-15 pr-3 cursor-pointer"
+            <div className={`flex flex-col fixed top-0 left-0 h-full bg-[var(--color-alt)] z-50 transition-all duration-300 ${open ? "w-64" : "w-20"}`}>
+
+                {/* BOTÓN INTERNO */}
+                <div
+                    className={`flex items-center h-15 cursor-pointer ${open ? "justify-end pr-3" : "justify-center"}`}
                     onClick={() => setOpen(!open)}
                 >
-                    {open ? <LuChevronLeft className="w-8 h-8" /> : <LuChevronRight className="w-8 h-8" />}
+                    {open
+                        ? <LuChevronLeft className="w-8 h-8" />
+                        : <LuChevronRight className="w-8 h-8" />
+                    }
                 </div>
 
-                {/* Ítems del Menú */}
-                <div className="flex items-center gap-4 p-6 overflow-hidden">
-                    <LuBot className="w-6 h-6 min-w-[24px]" />
+                {/* ÍTEMS */}
+                <div className={`flex items-center gap-4 overflow-hidden ${open ? "p-6" : "justify-center p-4"}`}>
+                    <LuBot className="w-6 h-6 min-w-[24px] flex-shrink-0" />
                     {open && <span className="whitespace-nowrap transition-opacity duration-300">Chatbot Whabot</span>}
                 </div>
 
-                <div className="flex items-center gap-4 p-6 overflow-hidden">
-                    <LuBraces className="w-6 h-6 min-w-[24px]" />
+                <div className={`flex items-center gap-4 overflow-hidden ${open ? "p-6" : "justify-center p-4"}`}>
+                    <LuBraces className="w-6 h-6 min-w-[24px] flex-shrink-0" />
                     {open && <span className="whitespace-nowrap">Código y API</span>}
                 </div>
 
-                <div className="flex items-center gap-4 p-6 overflow-hidden">
-                    <LuChartColumn className="w-6 h-6 min-w-[24px]" />
+                <div className={`flex items-center gap-4 overflow-hidden ${open ? "p-6" : "justify-center p-4"}`}>
+                    <LuChartColumn className="w-6 h-6 min-w-[24px] flex-shrink-0" />
                     {open && <span className="whitespace-nowrap">Estadísticas</span>}
                 </div>
 
-                {/* Elemento inferior (con mt-auto que ya tenías) */}
+                {/* ABAJO */}
                 <div className={`mt-auto flex items-center h-12 gap-3 bg-[var(--color-back)] m-4 rounded-xl ${open ? "pl-3" : "justify-center"}`}>
-                    <LuChartColumn className="w-6 h-6" />
+                    <LuChartColumn className="w-6 h-6 flex-shrink-0" />
                     {open && <span className="whitespace-nowrap">Reportes</span>}
                 </div>
+
             </div>
-            hol
         </>
 
     )
