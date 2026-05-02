@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:3000/api/v1/";
+const API_URL = "http://softproject.qzz.io:3000/api/v1/";
 
 export const apiRequest = async (endpoint, method = "GET", data = null, token = null) => {
   const headers = {
@@ -20,12 +20,12 @@ export const apiRequest = async (endpoint, method = "GET", data = null, token = 
 
   try {
     const response = await fetch(`${API_URL}${endpoint}`, options);
-    
+
     const text = await response.text();
     if (!text) {
       throw new Error("Respuesta vacía del servidor");
     }
-    
+
     const result = JSON.parse(text);
 
     if (!response.ok) {
