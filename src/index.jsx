@@ -1,5 +1,5 @@
 import { render } from 'preact';
-import { LocationProvider, Router, Route } from 'preact-iso';
+import { LocationProvider, Router, Route, useLocation } from 'preact-iso';
 
 import { Home } from './pages/Home/index.jsx';
 import { NotFound } from './pages/_404.jsx';
@@ -8,16 +8,23 @@ import { Register } from './pages/Register/register.jsx';
 import { Menu } from './components/menu.jsx';
 import { WhabotConfig } from './pages/Replyconfig/replyconfig';
 import { NotifyProvider, NotifyContainer } from './components/Notify/NotifyContext.jsx';
+
 import './style.css';
 
 function AppContent() {
-	return (
-		// Usamos flex para que el Menu esté a la izquierda y el Router a la derecha
-		<div className="flex">
-			{/* El Menu se coloca AQUÍ para que sea visible en todas las páginas */}
-			<Menu />
 
-			{/* El main contendrá las páginas que cambian */}
+	const location = useLocation()
+
+	const hideMenu =
+		location.url === "/login" ||
+		location.url === "/register"
+
+	return (
+
+		<div className="flex">
+
+			{!hideMenu && <Menu />}
+
 			<main className="flex-1">
 				<Router>
 					<Route path="/" component={Home} />
@@ -27,6 +34,7 @@ function AppContent() {
 					<Route default component={NotFound} />
 				</Router>
 			</main>
+
 		</div>
 	);
 }

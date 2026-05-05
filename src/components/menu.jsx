@@ -20,17 +20,17 @@ export function Menu() {
 
                 {/* BOTÓN INTERNO PARA ABRIR/CERRAR */}
                 <div
-                    className={`flex items-center h-16 cursor-pointer hover:bg-black/5 ${open ? "justify-end pr-5" : "justify-center"}`}
+                    className={`flex items-center h-16 cursor-pointer hover:bg-black/5 select-none ${open ? "justify-end pr-5" : "justify-center"}`}
                     onClick={() => setOpen(!open)}
                 >
                     {open ? <LuChevronLeft className="w-8 h-8 text-[#2f3e36]" /> : <LuChevronRight className="w-8 h-8 text-[#2f3e36]" />}
                 </div>
 
                 {/* ÍTEMS DEL MENÚ */}
-                {/* 1. BOTÓN QUE LLEVA A LA CONFIGURACIÓN (Imagen 6 -> Imagen 1) */}
+                {/* BOTÓN QUE LLEVA A LA CONFIGURACIÓN ) */}
                 <div
                     onClick={() => route("/reply")}
-                    className={`flex items-center gap-4 cursor-pointer hover:bg-black/5 transition-colors ${open ? "p-6" : "justify-center p-4"}`}
+                    className={`flex items-center gap-4 cursor-pointer hover:bg-black/5 select-none transition-colors ${open ? "p-6" : "justify-center p-4"}`}
                 >
                     <LuBot className="w-6 h-6 min-w-[24px] text-[#2f3e36]" />
                     {open && <span className="text-[#2f3e36] font-medium whitespace-nowrap">Chatbot Whabot</span>}
