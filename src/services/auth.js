@@ -7,5 +7,5 @@ export const loginUser = (email, password) => {
   });
 };
 export const registerUser = (data) => {
-  return apiRequest("auth/register", "POST", data);
+  return apiRequest("user/create", "POST", data);
 };

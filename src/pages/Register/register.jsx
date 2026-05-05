@@ -1,18 +1,20 @@
 import { useState } from "react"
 import { useLocation } from 'preact-iso';
+import { registerUser } from "../../services/auth"
+import { useNotify } from "../../components/Notify/NotifyContext"
 
 export function Register() {
 
     const { route } = useLocation()
+	const { notify } = useNotify()
 
     const [email, setEmail] = useState("")
     const [telefono, setTelefono] = useState("")
     const [nombre, setNombre] = useState("")
-    const [ci, setCi] = useState("")
     const [password, setPassword] = useState("")
     const [confirmPassword, setConfirmPassword] = useState("")
 
-    const handleRegister = (e) => {
+    const handleRegister = async(e) => {
 
         e.preventDefault()
 
@@ -21,9 +23,27 @@ export function Register() {
             return
         }
 
-        const data = { email, telefono, nombre, ci, password }
+        const data = { 
+			email, 
+			telefono,
+			username: nombre,
+			password 
+		}
+			
+		try {
 
-        route("/login")
+			const response = await registerUser(data)
+
+			if (!response?.data?.token) {
+				throw new Error(response?.message || "Registro fallido")
+			}
+			console.log(response?.data)
+			route("/login")
+		} catch (error) {
+
+			notify(error.message, "error")
+		}
+
     }
 
     return (
