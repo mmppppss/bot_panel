@@ -6,7 +6,7 @@ import { NotFound } from './pages/_404.jsx';
 import { Login } from './pages/Login/login.jsx';
 import { Register } from './pages/Register/register.jsx';
 import { Menu } from './components/menu.jsx';
-import { WhabotConfig } from './pages/Replyconfig/replyconfig';
+import { AgentCreator } from './pages/agent-creator/index.jsx';
 import { NotifyProvider, NotifyContainer } from './components/Notify/NotifyContext.jsx';
 
 import './style.css';
@@ -30,11 +30,10 @@ function AppContent() {
 					<Route path="/" component={Home} />
 					<Route path="/login" component={Login} />
 					<Route path="/register" component={Register} />
-					<Route path="/reply" component={WhabotConfig} />
+					<Route path="/create" component={AgentCreator} />
 					<Route default component={NotFound} />
 				</Router>
 			</main>
-
 		</div>
 	);
 }

@@ -26,6 +26,7 @@ export function Login() {
 			console.log(response?.data)
 
 			localStorage.setItem("token", response.data.token)
+			localStorage.setItem("id_user", response.data.user.id)
 
 			route("/")
 

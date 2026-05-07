@@ -26,19 +26,17 @@ export function Menu() {
                     {open ? <LuChevronLeft className="w-8 h-8 text-[#2f3e36]" /> : <LuChevronRight className="w-8 h-8 text-[#2f3e36]" />}
                 </div>
 
-                {/* ÍTEMS DEL MENÚ */}
-                {/* BOTÓN QUE LLEVA A LA CONFIGURACIÓN ) */}
                 <div
-                    onClick={() => route("/reply")}
+                    onClick={() => route("/create")}
                     className={`flex items-center gap-4 cursor-pointer hover:bg-black/5 select-none transition-colors ${open ? "p-6" : "justify-center p-4"}`}
                 >
                     <LuBot className="w-6 h-6 min-w-[24px] text-[#2f3e36]" />
-                    {open && <span className="text-[#2f3e36] font-medium whitespace-nowrap">Chatbot Whabot</span>}
+                    {open && <span className="text-[#2f3e36] font-medium whitespace-nowrap">Crear Agente</span>}
                 </div>
 
                 <div className={`flex items-center gap-4 cursor-pointer hover:bg-black/5 ${open ? "p-6" : "justify-center p-4"}`}>
                     <LuBraces className="w-6 h-6 min-w-[24px] text-[#2f3e36]" />
-                    {open && <span className="text-[#2f3e36] whitespace-nowrap">Código y API</span>}
+                    {open && <span className="text-[#2f3e36] whitespace-nowrap">API</span>}
                 </div>
 
                 <div className={`flex items-center gap-4 cursor-pointer hover:bg-black/5 ${open ? "p-6" : "justify-center p-4"}`}>
@@ -55,7 +53,3 @@ export function Menu() {
         </>
     )
 }
-
-
-
-
