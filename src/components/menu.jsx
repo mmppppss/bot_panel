@@ -3,10 +3,12 @@ import { useLocation } from 'preact-iso';
 import { LuBot, LuBraces, LuChartColumn, LuChevronLeft, LuChevronRight } from "react-icons/lu"
 
 export function Menu() {
+
     const [open, setOpen] = useState(false)
     const { route } = useLocation();
 
     return (
+
         <>
             {/* Overlay para cerrar el menú si haces clic fuera */}
             {open && (
@@ -23,32 +25,67 @@ export function Menu() {
                     className={`flex items-center h-16 cursor-pointer hover:bg-black/5 select-none ${open ? "justify-end pr-5" : "justify-center"}`}
                     onClick={() => setOpen(!open)}
                 >
-                    {open ? <LuChevronLeft className="w-8 h-8 text-[#2f3e36]" /> : <LuChevronRight className="w-8 h-8 text-[#2f3e36]" />}
+                    {open ? (
+                        <LuChevronLeft className="w-8 h-8 text-[#2f3e36]" />
+                    ) : (
+                        <LuChevronRight className="w-8 h-8 text-[#2f3e36]" />
+                    )}
                 </div>
 
+                {/* CREAR AGENTE */}
                 <div
                     onClick={() => route("/create")}
                     className={`flex items-center gap-4 cursor-pointer hover:bg-black/5 select-none transition-colors ${open ? "p-6" : "justify-center p-4"}`}
                 >
                     <LuBot className="w-6 h-6 min-w-[24px] text-[#2f3e36]" />
-                    {open && <span className="text-[#2f3e36] font-medium whitespace-nowrap">Crear Agente</span>}
+
+                    {open && (
+                        <span className="text-[#2f3e36] font-medium whitespace-nowrap">
+                            Crear Agente
+                        </span>
+                    )}
                 </div>
 
-                <div className={`flex items-center gap-4 cursor-pointer hover:bg-black/5 ${open ? "p-6" : "justify-center p-4"}`}>
+                {/* MENSAJES */}
+                <div
+                    onClick={() => route("/messages")}
+                    className={`flex items-center gap-4 cursor-pointer hover:bg-black/5 ${open ? "p-6" : "justify-center p-4"}`}
+                >
                     <LuBraces className="w-6 h-6 min-w-[24px] text-[#2f3e36]" />
-                    {open && <span className="text-[#2f3e36] whitespace-nowrap">API</span>}
+
+                    {open && (
+                        <span className="text-[#2f3e36] whitespace-nowrap">
+                            Mensajes
+                        </span>
+                    )}
                 </div>
 
-                <div className={`flex items-center gap-4 cursor-pointer hover:bg-black/5 ${open ? "p-6" : "justify-center p-4"}`}>
+                {/* ESTADÍSTICAS */}
+                <div
+                    className={`flex items-center gap-4 cursor-pointer hover:bg-black/5 ${open ? "p-6" : "justify-center p-4"}`}
+                >
                     <LuChartColumn className="w-6 h-6 min-w-[24px] text-[#2f3e36]" />
-                    {open && <span className="text-[#2f3e36] whitespace-nowrap">Estadísticas</span>}
+
+                    {open && (
+                        <span className="text-[#2f3e36] whitespace-nowrap">
+                            Estadísticas
+                        </span>
+                    )}
                 </div>
 
                 {/* BOTÓN INFERIOR DE REPORTES */}
-                <div className={`mt-auto flex items-center h-12 gap-3 bg-[var(--color-back)] m-4 rounded-xl shadow-sm ${open ? "pl-3" : "justify-center"}`}>
+                <div
+                    className={`mt-auto flex items-center h-12 gap-3 bg-[var(--color-back)] m-4 rounded-xl shadow-sm ${open ? "pl-3" : "justify-center"}`}
+                >
                     <LuChartColumn className="w-6 h-6 text-[#2f3e36]" />
-                    {open && <span className="text-[#2f3e36] text-sm">Reportes</span>}
+
+                    {open && (
+                        <span className="text-[#2f3e36] text-sm">
+                            Reportes
+                        </span>
+                    )}
                 </div>
+
             </div>
         </>
     )
