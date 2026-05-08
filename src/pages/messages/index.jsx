@@ -1,9 +1,13 @@
-import { useState, useRef } from "react"
+import { useState, useEffect, useRef } from "react"
 import { LuPaperclip, LuSendHorizontal } from "react-icons/lu"
+import { getAgents, sendMessage } from "../../services/agents"
 
 export function Messages() {
 
     const [message, setMessage] = useState("")
+    const [phone, setPhone] = useState("")
+    const [agents, setAgents] = useState([])
+    const [selectedAgent, setSelectedAgent] = useState("")
 
     const [messages, setMessages] = useState([
         {
@@ -14,9 +18,15 @@ export function Messages() {
 
     const fileInputRef = useRef(null)
 
-    const handleSend = () => {
+    useEffect(() => {
+        getAgents()
+            .then((res) => setAgents(res.data || []))
+            .catch((err) => console.error("Error al cargar agentes:", err))
+    }, [])
 
-        if (message.trim() === "") return
+    const handleSend = async () => {
+
+        if (message.trim() === "" || phone.trim() === "" || !selectedAgent) return
 
         setMessages([
             ...messages,
@@ -25,6 +35,12 @@ export function Messages() {
                 text: message
             }
         ])
+
+        try {
+            await sendMessage(selectedAgent, phone, message)
+        } catch (error) {
+            console.error(error)
+        }
 
         setMessage("")
     }
@@ -44,6 +60,29 @@ export function Messages() {
 
             {/* CHAT PRINCIPAL */}
             <div className="flex-1 flex flex-col">
+
+                {/* BARRA SUPERIOR: AGENTE Y TELÉFONO */}
+                <div className="px-7 pt-4 pb-2 flex gap-3 items-center">
+                    <select
+                        value={selectedAgent}
+                        onChange={(e) => setSelectedAgent(e.target.value)}
+                        className="bg-[#E0E4DF] rounded-3xl px-4 py-2 text-sm outline-none text-[#2f3e36]"
+                    >
+                        <option value="">Seleccionar agente</option>
+                        {agents.map((agent) => (
+                            <option key={agent.id} value={agent.id}>
+                                {agent.name}
+                            </option>
+                        ))}
+                    </select>
+                    <input
+                        type="text"
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
+                        placeholder="Número de teléfono"
+                        className="flex-1 bg-[#E0E4DF] rounded-3xl px-4 py-2 outline-none text-[#2f3e36] text-sm"
+                    />
+                </div>
 
                 {/* ÁREA MENSAJES */}
                 <div className="flex-1 overflow-y-auto px-7 py-5 flex flex-col gap-5">
