@@ -1,40 +1,47 @@
-const API_URL = "http://softproject.qzz.io:3000/api/v1/";
+const API_URL = "http://api.softproject.qzz.io/api/v1/";
 
-export const apiRequest = async (endpoint, method = "GET", data = null, token = null) => {
-  const headers = {
-    "Content-Type": "application/json"
-  };
+export const apiRequest = async (
+	endpoint,
+	method = "GET",
+	data = null,
+	token = null,
+) => {
+	const headers = {
+		"Content-Type": "application/json",
+	};
 
-  if (token) {
-    headers["Authorization"] = `Bearer ${token}`;
-  }
+	if (token) {
+		headers["Authorization"] = `Bearer ${token}`;
+	}
 
-  const options = {
-    method,
-    headers
-  };
+	const options = {
+		method,
+		headers,
+	};
 
-  if (data) {
-    options.body = JSON.stringify(data);
-  }
+	if (data) {
+		options.body = JSON.stringify(data);
+	}
 
-  try {
-    const response = await fetch(`${API_URL}${endpoint}`, options);
+	try {
+		const response = await fetch(`${API_URL}${endpoint}`, options);
 
-    const text = await response.text();
-    if (!text) {
-      throw new Error("Respuesta vacía del servidor");
-    }
+		const text = await response.text();
+		if (!text) {
+			throw new Error("Respuesta vacía del servidor");
+		}
 
-    const result = JSON.parse(text);
+		const result = JSON.parse(text);
 
-    if (!response.ok) {
-      throw new Error(result.message || result.error || `Error ${response.status}`);
-    }
+		if (!response.ok) {
+			throw new Error(
+				result.message || result.error || `Error ${response.status}`,
+			);
+		}
 
-    return result;
-  } catch (error) {
-    console.error("Error en la API:", error);
-    throw error;
-  }
+		return result;
+	} catch (error) {
+		console.error("Error en la API:", error);
+		throw error;
+	}
 };
