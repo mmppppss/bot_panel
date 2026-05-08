@@ -1,5 +1,8 @@
 const API_URL = "http://api.softproject.qzz.io/api/v1/";
-
+/*
+ * Capa de abstraccion para fetch
+ * PEticiones de api
+ */
 export const apiRequest = async (
 	endpoint,
 	method = "GET",
