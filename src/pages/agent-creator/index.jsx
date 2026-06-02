@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { apiRequest } from "../../helpers/api";
-import { getWhatsappQR } from "../../services/agents";
+import { getWhatsappQR, connectTelegram } from "../../services/agents";
+import { useAuth } from "../../contexts/AuthContext";
+import { useRequireAuth } from "../../hooks/useRequireAuth";
+import { useNotify } from "../../components/Notify/NotifyContext";
 import QRCode from "react-qr-code";
-// --- Sub-componentes de Pasos ---
 
 const StepDatos = ({ formData, setFormData }) => (
 	<div className="flex flex-col gap-5 pt-6">
@@ -59,32 +61,47 @@ const StepModulos = ({ whatsapp, setWhatsapp, telegram, setTelegram }) => {
 	);
 };
 
-const StepConexion = ({ telegramKey, setTelegramKey, code }) => (
-	<div className="flex flex-col gap-4 pt-6">
-		<div className="flex items-center justify-between bg-[#b2b8af] rounded-2xl p-5">
-			<span className="text-xl text-[#2f3e36] font-medium text-left">
-				Whatsapp
-			</span>
-			<div className="bg-white p-1 rounded-lg shadow-sm">
-				<div className="w-40 h-40 bg-black">
-					<QRCode className="w-40 h-40" value={code}></QRCode>
-				</div>
-			</div>
-		</div>
+const StepConexion = ({ whatsapp, telegram, telegramKey, setTelegramKey, code }) => {
+	const hasModules = whatsapp || telegram;
 
-		<div className="bg-[#b2b8af] rounded-2xl p-5 flex flex-col gap-3">
-			<span className="text-xl text-[#2f3e36] font-medium text-left">
-				Telegram
-			</span>
-			<input
-				value={telegramKey}
-				onChange={(e) => setTelegramKey(e.target.value)}
-				placeholder="Ingresa tu Api Key"
-				className="w-full h-10 rounded-full bg-[#e0e4df] px-5 outline-none text-sm border-none"
-			/>
+	if (!hasModules) {
+		return (
+			<div className="flex flex-col gap-4 pt-6">
+				<p className="text-[#2f3e36] text-sm">No seleccionaste ningún módulo para conectar.</p>
+			</div>
+		);
+	}
+
+	return (
+		<div className="flex flex-col gap-4 pt-6">
+			{whatsapp && (
+				<div className="flex items-center justify-between bg-[#b2b8af] rounded-2xl p-5">
+					<span className="text-xl text-[#2f3e36] font-medium text-left">Whatsapp</span>
+					<div className="bg-white p-1 rounded-lg shadow-sm">
+						{code ? (
+							<QRCode className="w-40 h-40" value={code} />
+						) : (
+							<div className="w-40 h-40 flex items-center justify-center text-sm text-[#2f3e36]">
+								Cargando QR...
+							</div>
+						)}
+					</div>
+				</div>
+			)}
+			{telegram && (
+				<div className="bg-[#b2b8af] rounded-2xl p-5 flex flex-col gap-3">
+					<span className="text-xl text-[#2f3e36] font-medium text-left">Telegram</span>
+					<input
+						value={telegramKey}
+						onChange={(e) => setTelegramKey(e.target.value)}
+						placeholder="Ingresa el token de Telegram"
+						className="w-full h-10 rounded-full bg-[#e0e4df] px-5 outline-none text-sm border-none"
+					/>
+				</div>
+			)}
 		</div>
-	</div>
-);
+	);
+};
 
 const StepFinalizar = () => (
 	<div className="flex flex-col gap-4 pt-6 text-[#2f3e36]">
@@ -95,18 +112,19 @@ const StepFinalizar = () => (
 	</div>
 );
 
-// --- Componente Principal ---
-
 export function AgentCreator() {
+	const { loading: authLoading, isAuthenticated } = useRequireAuth();
+	const { user } = useAuth();
+	const { notify } = useNotify();
+
 	const [step, setStep] = useState(1);
 	const [loading, setLoading] = useState(false);
 
-	// Estados de persistencia
 	const [formData, setFormData] = useState({ name: "", description: "" });
 	const [whatsapp, setWhatsapp] = useState(false);
 	const [telegram, setTelegram] = useState(false);
 	const [telegramKey, setTelegramKey] = useState("");
-	const [idAgent, setIdAgent] = useState("");
+	const [agentId, setAgentId] = useState(null);
 	const [code, setCode] = useState("");
 
 	const steps = [
@@ -118,25 +136,29 @@ export function AgentCreator() {
 
 	const handleSubmit = async () => {
 		setLoading(true);
-		const id_user = localStorage.getItem("id_user");
 
 		try {
-			// Ejecutamos tu función con los datos guardados
-			const req = await apiRequest("user/" + id_user + "/agents/", "POST", {
-				name: formData.name,
-				description: formData.description,
-			});
-			console.log(req);
-			setIdAgent(req.data.id);
+			let currentAgentId = agentId;
 
-			const res = await getWhatsappQR(idAgent);
-			setCode(res.data);
-			console.log(code);
-			// Si la petición es exitosa, avanzamos al siguiente paso (Conexión)
+			if (!currentAgentId) {
+				const req = await apiRequest("user/" + user.id + "/agents/", "POST", {
+					name: formData.name,
+					description: formData.description,
+				});
+				currentAgentId = req.data.id;
+				setAgentId(currentAgentId);
+			}
+
+			let qrCode = "";
+			if (whatsapp) {
+				const res = await getWhatsappQR(user.id, currentAgentId);
+				qrCode = res.data;
+			}
+			setCode(qrCode);
 			setStep(3);
 		} catch (error) {
 			console.error("Error al crear el agente:", error);
-			alert("Hubo un error al crear el agente. Revisa los datos.");
+			notify(err.message, "error");
 		} finally {
 			setLoading(false);
 		}
@@ -144,11 +166,15 @@ export function AgentCreator() {
 
 	const handleConnect = async () => {
 		setLoading(true);
+
 		try {
+			if (telegram && telegramKey.trim()) {
+				await connectTelegram(user.id, agentId, telegramKey);
+			}
 			setStep(4);
 		} catch (error) {
-			console.error("Error al crear el agente:", error);
-			alert("Hubo un error al crear el agente. Revisa los datos.");
+			console.error("Error al conectar:", error);
+			notify(err.message, "error");
 		} finally {
 			setLoading(false);
 		}
@@ -156,14 +182,23 @@ export function AgentCreator() {
 
 	const handleNext = () => {
 		if (step === 2) {
-			// Disparar petición al terminar el paso 2
 			handleSubmit();
+		} else if (step === 3) {
+			handleConnect();
 		} else if (step < 4) {
 			setStep(step + 1);
 		}
 	};
 
+	if (authLoading || !isAuthenticated) return null;
+
 	const handlePrev = () => step > 1 && !loading && setStep(step - 1);
+
+	const nextLabel = () => {
+		if (loading) return "Creando...";
+		if (step === 3) return "Conectar";
+		return "Siguiente";
+	};
 
 	const renderStepContent = () => {
 		switch (step) {
@@ -181,6 +216,8 @@ export function AgentCreator() {
 			case 3:
 				return (
 					<StepConexion
+						whatsapp={whatsapp}
+						telegram={telegram}
 						telegramKey={telegramKey}
 						setTelegramKey={setTelegramKey}
 						code={code}
@@ -194,23 +231,23 @@ export function AgentCreator() {
 	};
 
 	return (
-		<div className="min-h-screen w-full flex items-center justify-center bg-[#D1D5D2] p-4">
-			<div className="grid grid-cols-5 grid-rows-5 gap-4 w-full max-w-4xl h-[550px] text-[#4A554D] ml-[15%]">
-				<div className="col-span-3 row-start-1 flex items-end">
+        <div className="min-h-screen w-full flex items-center justify-center bg-[#D1D5D2] p-4">
+			<div className="flex flex-col md:grid md:grid-cols-5 md:grid-rows-5 gap-6 md:gap-4 w-full max-w-4xl md:h-[550px] text-[#4A554D]">
+				<div className="md:col-span-3 md:row-start-1 flex items-end">
 					<h2 className="text-4xl font-light text-left">
 						{steps[step - 1].label}
 					</h2>
 				</div>
 
-				<div className="col-span-3 row-start-2 row-span-3 text-left">
+				<div className="md:col-span-3 md:row-start-2 md:row-span-3 text-left">
 					{renderStepContent()}
 				</div>
 
-				<div className="col-span-3 row-start-5 flex items-center justify-end">
+				<div className="md:col-span-3 md:row-start-5 flex items-center justify-end gap-4">
 					<button
 						onClick={handlePrev}
 						disabled={step === 1 || loading}
-						className={`text-[#A18E6E] m-8 uppercase tracking-widest text-sm font-bold transition-opacity ${step === 1 ? "opacity-0 pointer-events-none" : "hover:opacity-80"}`}
+						className={`text-[#A18E6E] uppercase tracking-widest text-sm font-bold transition-opacity ${step === 1 ? "opacity-0 pointer-events-none" : "hover:opacity-80"}`}
 					>
 						Anterior
 					</button>
@@ -218,13 +255,13 @@ export function AgentCreator() {
 					<button
 						onClick={handleNext}
 						disabled={loading}
-						className="bg-[#3D4A3E] text-[#A18E6E] px-16 py-3 rounded-full uppercase tracking-widest text-sm font-bold shadow-lg hover:bg-[#2f3a30] transition-colors disabled:opacity-50"
+						className="bg-[#3D4A3E] text-[#A18E6E] px-10 md:px-16 py-3 rounded-full uppercase tracking-widest text-sm font-bold shadow-lg hover:bg-[#2f3a30] transition-colors disabled:opacity-50"
 					>
-						{loading ? "Creando..." : "Siguiente"}
+						{nextLabel()}
 					</button>
 				</div>
 
-				<div className="col-span-2 col-start-4 row-span-5 row-start-1">
+				<div className="hidden md:block md:col-span-2 md:col-start-4 md:row-span-5 md:row-start-1">
 					<div className="bg-[#B4BCB4] h-full w-[65%] rounded-2xl p-10 pt-16 flex flex-col space-y-8 text-sm">
 						{steps.map((s) => (
 							<div

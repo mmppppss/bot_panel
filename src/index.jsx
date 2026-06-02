@@ -1,3 +1,4 @@
+import { useEffect } from "preact/hooks";
 import { render } from 'preact';
 import { LocationProvider, Router, Route, useLocation } from 'preact-iso';
 
@@ -9,6 +10,8 @@ import { Register } from './pages/Register/register.jsx';
 import { Menu } from './components/menu.jsx';
 
 import { AgentCreator } from './pages/agent-creator/index.jsx';
+import { AgentEdit } from './pages/agent-edit/index.jsx';
+import { AgentResponses } from './pages/agent-edit/responses/index.jsx';
 import { Messages } from './pages/messages/index.jsx';
 import { AgentsTable } from './pages/agentsTable/index.jsx';
 
@@ -17,11 +20,28 @@ import {
 	NotifyContainer
 } from './components/Notify/NotifyContext.jsx';
 
+import { AuthProvider } from './contexts/AuthContext.jsx';
+import { PageLayout } from './components/Layout.jsx';
+
 import './style.css';
+
+const TITLES = {
+	"/": "Dashboard",
+	"/login": "Iniciar sesión",
+	"/register": "Registro",
+	"/create": "Crear agente",
+	"/messages": "Mensajes",
+	"/agents": "Agentes",
+}
 
 function AppContent() {
 
 	const location = useLocation()
+
+	useEffect(() => {
+		const section = TITLES[location.path] || location.path.slice(1)
+		document.title = section ? `Reply - ${section}` : "Reply"
+	}, [location.path])
 
 	const hideMenu =
 		location.path === "/login" ||
@@ -31,18 +51,11 @@ function AppContent() {
 
 		<div className="flex">
 
-			{/* MENU */}
 			{!hideMenu && <Menu />}
 
-			{/* CONTENIDO */}
-			<main className="flex-1">
+			<main className={`flex-1 ${!hideMenu ? "md:ml-20" : ""}`}>
 
 				<Router>
-
-					<Route
-						path="/"
-						component={Home}
-					/>
 
 					<Route
 						path="/login"
@@ -55,18 +68,33 @@ function AppContent() {
 					/>
 
 					<Route
+						path="/"
+						component={() => <PageLayout><Home /></PageLayout>}
+					/>
+
+					<Route
 						path="/create"
-						component={AgentCreator}
+						component={() => <PageLayout><AgentCreator /></PageLayout>}
+					/>
+
+					<Route
+						path="/edit/:id"
+						component={() => <PageLayout><AgentEdit /></PageLayout>}
+					/>
+
+					<Route
+						path="/edit/:id/responses"
+						component={() => <PageLayout><AgentResponses /></PageLayout>}
 					/>
 
 					<Route
 						path="/messages"
-						component={Messages}
+						component={() => <PageLayout><Messages /></PageLayout>}
 					/>
 
 					<Route
 						path="/agents"
-						component={AgentsTable}
+						component={() => <PageLayout><AgentsTable /></PageLayout>}
 					/>
 
 					<Route
@@ -88,13 +116,17 @@ export function App() {
 
 		<LocationProvider>
 
-			<NotifyProvider>
+			<AuthProvider>
 
-				<NotifyContainer />
+				<NotifyProvider>
 
-				<AppContent />
+					<NotifyContainer />
 
-			</NotifyProvider>
+					<AppContent />
+
+				</NotifyProvider>
+
+			</AuthProvider>
 
 		</LocationProvider>
 	);
