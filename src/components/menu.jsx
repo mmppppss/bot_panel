@@ -59,16 +59,16 @@ export function Menu() {
                         </span>
                     )}
                 </div>
-
-                {/* ESTADÍSTICAS */}
+                {/* AGENTES */}
                 <div
+                    onClick={() => route("/agents")}
                     className={`flex items-center gap-4 cursor-pointer hover:bg-black/5 ${open ? "p-6" : "justify-center p-4"}`}
                 >
                     <LuChartColumn className="w-6 h-6 min-w-[24px] text-[#2f3e36]" />
 
                     {open && (
                         <span className="text-[#2f3e36] whitespace-nowrap">
-                            Estadísticas
+                            Agentes
                         </span>
                     )}
                 </div>
