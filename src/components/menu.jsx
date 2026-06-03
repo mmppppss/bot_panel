@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react"
 import { useLocation } from 'preact-iso';
-import { LuBot, LuBraces, LuListTodo, LuSettings, LuChevronLeft, LuChevronRight } from "react-icons/lu"
+import { LuBot, LuBraces, LuListTodo, LuSettings, LuUsers, LuHistory, LuChevronLeft, LuChevronRight } from "react-icons/lu"
 import { icon } from "profile-icon"
 import { useAuth } from "../contexts/AuthContext"
 
@@ -81,6 +81,21 @@ export function Menu() {
                         </span>
                     )}
                 </div>
+
+                {/* HISTORIAL */}
+                <div
+                    onClick={() => route("/history")}
+                    className={`flex items-center gap-4 cursor-pointer hover:bg-black/5 ${open ? "p-6" : "justify-center p-4"}`}
+                >
+                    <LuHistory className="w-6 h-6 min-w-[24px] text-[#2f3e36]" />
+
+                    {open && (
+                        <span className="text-[#2f3e36] whitespace-nowrap">
+                            Historial
+                        </span>
+                    )}
+                </div>
+
                 {/* AGENTES */}
                 <div
                     onClick={() => route("/agents")}
@@ -105,6 +120,20 @@ export function Menu() {
                     {open && (
                         <span className="text-[#2f3e36] whitespace-nowrap">
                             Configuración
+                        </span>
+                    )}
+                </div>
+
+                {/* CONTACTOS */}
+                <div
+                    onClick={() => route("/contacts")}
+                    className={`flex items-center gap-4 cursor-pointer hover:bg-black/5 ${open ? "p-6" : "justify-center p-4"}`}
+                >
+                    <LuUsers className="w-6 h-6 min-w-[24px] text-[#2f3e36]" />
+
+                    {open && (
+                        <span className="text-[#2f3e36] whitespace-nowrap">
+                            Contactos
                         </span>
                     )}
                 </div>

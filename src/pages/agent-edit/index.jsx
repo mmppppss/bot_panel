@@ -7,10 +7,11 @@ import QRCode from "react-qr-code";
 import { getAgent, updateAgent, getModules, upsertModule, toggleModule, getWhatsappQR, connectTelegram } from "../../services/agents";
 
 const MODELS = [
+	"openrouter/owl-alpha",
 	"nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free",
-	"meta-llama/llama-3.2-3b-instruct:free",
-	"mistralai/mistral-7b-instruct:free",
-	"google/gemini-2.0-flash-exp:free",
+	"moonshotai/kimi-k2.6:free",
+	"google/gemma-4-26b-a4b-it:free",
+	"qwen/qwen3-next-80b-a3b-instruct:free"
 ];
 
 export function AgentEdit() {
