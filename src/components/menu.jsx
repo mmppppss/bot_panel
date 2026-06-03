@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react"
 import { useLocation } from 'preact-iso';
-import { LuBot, LuBraces, LuListTodo, LuChevronLeft, LuChevronRight } from "react-icons/lu"
+import { LuBot, LuBraces, LuListTodo, LuSettings, LuChevronLeft, LuChevronRight } from "react-icons/lu"
 import { icon } from "profile-icon"
 import { useAuth } from "../contexts/AuthContext"
 
@@ -91,6 +91,20 @@ export function Menu() {
                     {open && (
                         <span className="text-[#2f3e36] whitespace-nowrap">
                             Agentes
+                        </span>
+                    )}
+                </div>
+
+                {/* CONFIGURACIÓN */}
+                <div
+                    onClick={() => route("/config")}
+                    className={`flex items-center gap-4 cursor-pointer hover:bg-black/5 ${open ? "p-6" : "justify-center p-4"}`}
+                >
+                    <LuSettings className="w-6 h-6 min-w-[24px] text-[#2f3e36]" />
+
+                    {open && (
+                        <span className="text-[#2f3e36] whitespace-nowrap">
+                            Configuración
                         </span>
                     )}
                 </div>

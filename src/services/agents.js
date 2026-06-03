@@ -84,3 +84,15 @@ export const updateResponse = async (idAgent, idResponse, data) => {
 	// return apiRequest("agents/" + idAgent + "/responses/" + idResponse, "PUT", data);
 	console.log("updateResponse — pendiente de implementar", { idAgent, idResponse, data });
 };
+
+export const getAgentConfigs = async (idAgent) => {
+	return apiRequest("agents/" + idAgent + "/config", "GET");
+};
+
+export const setAgentConfig = async (idAgent, key, value) => {
+	return apiRequest("agents/" + idAgent + "/config/" + key, "PUT", { value });
+};
+
+export const deleteAgentConfig = async (idAgent, key) => {
+	return apiRequest("agents/" + idAgent + "/config/" + key, "DELETE");
+};

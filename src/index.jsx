@@ -14,6 +14,7 @@ import { AgentEdit } from './pages/agent-edit/index.jsx';
 import { AgentResponses } from './pages/agent-edit/responses/index.jsx';
 import { Messages } from './pages/messages/index.jsx';
 import { AgentsTable } from './pages/agentsTable/index.jsx';
+import { AgentConfig } from './pages/agent-config/index.jsx';
 
 import {
 	NotifyProvider,
@@ -32,6 +33,7 @@ const TITLES = {
 	"/create": "Crear agente",
 	"/messages": "Mensajes",
 	"/agents": "Agentes",
+	"/config": "Configuración",
 }
 
 function AppContent() {
@@ -95,6 +97,11 @@ function AppContent() {
 					<Route
 						path="/agents"
 						component={() => <PageLayout><AgentsTable /></PageLayout>}
+					/>
+
+					<Route
+						path="/config"
+						component={() => <PageLayout><AgentConfig /></PageLayout>}
 					/>
 
 					<Route
