@@ -1,12 +1,18 @@
 import { useState, useEffect, useRef } from "react"
 import { LuPaperclip, LuSendHorizontal } from "react-icons/lu"
 import { getAgents, sendMessage } from "../../services/agents"
+import { useAuth } from "../../contexts/AuthContext"
+import { useRequireAuth } from "../../hooks/useRequireAuth"
 
 export function Messages() {
+
+	const { loading, isAuthenticated } = useRequireAuth()
+	const { user } = useAuth()
 
     const [message, setMessage] = useState("")
     const [phone, setPhone] = useState("")
     const [agents, setAgents] = useState([])
+    const [agentsLoading, setAgentsLoading] = useState(true)
     const [selectedAgent, setSelectedAgent] = useState("")
 
     const [messages, setMessages] = useState([
@@ -19,10 +25,13 @@ export function Messages() {
     const fileInputRef = useRef(null)
 
     useEffect(() => {
-        getAgents()
+		if (!user?.id) return
+		setAgentsLoading(true)
+        getAgents(user.id)
             .then((res) => setAgents(res.data || []))
             .catch((err) => console.error("Error al cargar agentes:", err))
-    }, [])
+			.finally(() => setAgentsLoading(false))
+    }, [user])
 
     const handleSend = async () => {
 
@@ -37,13 +46,15 @@ export function Messages() {
         ])
 
         try {
-            await sendMessage(selectedAgent, phone, message)
+            await sendMessage(user.id, selectedAgent, phone, message)
         } catch (error) {
             console.error(error)
         }
 
         setMessage("")
     }
+
+	if (loading || !isAuthenticated) return null
 
     const handleKeyDown = (e) => {
 
@@ -54,9 +65,17 @@ export function Messages() {
 
     }
 
+	if (agentsLoading) {
+		return (
+			<div className="h-screen flex items-center justify-center">
+				<div className="text-[#2f3e36] text-sm animate-pulse">Cargando agentes...</div>
+			</div>
+		)
+	}
+
     return (
 
-        <div className="h-screen w-[calc(100vw-80px)] bg-[#D1D5D2] ml-[80px] flex overflow-hidden">
+        <div className="h-screen flex overflow-hidden">
 
             {/* CHAT PRINCIPAL */}
             <div className="flex-1 flex flex-col">

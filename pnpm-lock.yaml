@@ -17,6 +17,9 @@ importers:
       preact-iso:
         specifier: ^2.11.1
         version: 2.11.1(preact-render-to-string@6.6.6(preact@10.28.4))(preact@10.28.4)
+      profile-icon:
+        specifier: ^1.0.2
+        version: 1.0.2
       react-icons:
         specifier: ^5.6.0
         version: 5.6.0(react@19.2.5)
@@ -810,6 +813,9 @@ packages:
   preact@10.28.4:
     resolution: {integrity: sha512-uKFfOHWuSNpRFVTnljsCluEFq57OKT+0QdOiQo8XWnQ/pSvg7OpX5eNOejELXJMWy+BwM2nobz0FkvzmnpCNsQ==}
 
+  profile-icon@1.0.2:
+    resolution: {integrity: sha512-PjZgHLLMI7AMazQt7QxFbAITjfwY8ZYlfL39K6BiEEl8G/RX8S4gLQeI48+S+0f9p2BqrATJnZ1N4GPGXISLYQ==}
+
   prop-types@15.8.1:
     resolution: {integrity: sha512-oj87CgZICdulUohogVAR7AjlC0327U4el4L6eAvOqCeudMDVU0NThNaV+b9Df4dXgSP1gXMTnPdhfe/2qDH5cg==}
 
@@ -1564,6 +1570,8 @@ snapshots:
       preact: 10.28.4
 
   preact@10.28.4: {}
+
+  profile-icon@1.0.2: {}
 
   prop-types@15.8.1:
     dependencies:

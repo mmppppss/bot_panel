@@ -19,7 +19,7 @@ export function Register() {
         e.preventDefault()
 
         if (password !== confirmPassword) {
-            alert("Las contraseñas no coinciden")
+            notify("Las contraseñas no coinciden", "error")
             return
         }
 
@@ -32,12 +32,8 @@ export function Register() {
 			
 		try {
 
-			const response = await registerUser(data)
-
-			if (!response?.data?.token) {
-				throw new Error(response?.message || "Registro fallido")
-			}
-			console.log(response?.data)
+			await registerUser(data)
+			notify("Usuario creado correctamente", "success")
 			route("/login")
 		} catch (error) {
 
@@ -68,7 +64,7 @@ export function Register() {
                             placeholder="username"
                             value={nombre}
                             onChange={(e) => setNombre(e.target.value)}
-                            className="rounded-[20px] w-[280px] h-[45px] border-none bg-[var(--color-back)] pl-6 text-sm outline-none placeholder:text-gray-400"
+                            className="rounded-[20px] w-full max-w-[280px] h-[45px] border-none bg-[var(--color-back)] pl-6 text-sm outline-none placeholder:text-gray-400"
                         />
 
                         <input
@@ -76,7 +72,7 @@ export function Register() {
                             placeholder="password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            className="rounded-[20px] w-[280px] h-[45px] border-none bg-[var(--color-back)] pl-6 text-sm outline-none placeholder:text-gray-400"
+                            className="rounded-[20px] w-full max-w-[280px] h-[45px] border-none bg-[var(--color-back)] pl-6 text-sm outline-none placeholder:text-gray-400"
                         />
 
                         <input
@@ -84,7 +80,7 @@ export function Register() {
                             placeholder="email"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
-                            className="rounded-[20px] w-[280px] h-[45px] border-none bg-[var(--color-back)] pl-6 text-sm outline-none placeholder:text-gray-400"
+                            className="rounded-[20px] w-full max-w-[280px] h-[45px] border-none bg-[var(--color-back)] pl-6 text-sm outline-none placeholder:text-gray-400"
                         />
 
                         <input
@@ -92,7 +88,7 @@ export function Register() {
                             placeholder="repeat password"
                             value={confirmPassword}
                             onChange={(e) => setConfirmPassword(e.target.value)}
-                            className="rounded-[20px] w-[280px] h-[45px] border-none bg-[var(--color-back)] pl-6 text-sm outline-none placeholder:text-gray-400"
+                            className="rounded-[20px] w-full max-w-[280px] h-[45px] border-none bg-[var(--color-back)] pl-6 text-sm outline-none placeholder:text-gray-400"
                         />
 
                         <input
@@ -100,13 +96,13 @@ export function Register() {
                             placeholder="phone"
                             value={telefono}
                             onChange={(e) => setTelefono(e.target.value)}
-                            className="rounded-[20px] w-[280px] h-[45px] border-none bg-[var(--color-back)] pl-6 text-sm outline-none placeholder:text-gray-400"
+                            className="rounded-[20px] w-full max-w-[280px] h-[45px] border-none bg-[var(--color-back)] pl-6 text-sm outline-none placeholder:text-gray-400"
                         />
 
                         {/* BOTÓN */}
                         <button
                             type="submit"
-                            className="rounded-[20px] w-[280px] h-[50px] border-none bg-[var(--color-accent)] text-[var(--color-font)] text-sm font-medium cursor-pointer uppercase tracking-widest hover:opacity-90 transition-opacity"
+                            className="rounded-[20px] w-full max-w-[280px] h-[50px] border-none bg-[var(--color-accent)] text-[var(--color-font)] text-sm font-medium cursor-pointer uppercase tracking-widest hover:opacity-90 transition-opacity"
                         >
                             Create
                         </button>
@@ -117,7 +113,7 @@ export function Register() {
                     <img
                         src="/logo.svg"
                         alt="Logo empresa"
-                        className="w-[180px] object-contain"
+                        className="hidden md:block w-[180px] object-contain"
                     />
 
                 </div>

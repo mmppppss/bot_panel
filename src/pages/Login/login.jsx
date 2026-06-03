@@ -2,11 +2,13 @@ import { useState } from "react"
 import { useLocation } from 'preact-iso';
 import { loginUser } from "../../services/auth"
 import { useNotify } from "../../components/Notify/NotifyContext"
+import { useAuth } from "../../contexts/AuthContext"
 
 export function Login() {
 
 	const { route } = useLocation()
 	const { notify } = useNotify()
+	const { login } = useAuth()
 
 	const [email, setEmail] = useState("")
 	const [password, setPassword] = useState("")
@@ -23,10 +25,7 @@ export function Login() {
 				throw new Error(response?.message || "Login fallido")
 			}
 
-			console.log(response?.data)
-
-			localStorage.setItem("token", response.data.token)
-			localStorage.setItem("id_user", response.data.user.id)
+			login(response.data.token, response.data.user)
 
 			route("/")
 
@@ -51,18 +50,18 @@ export function Login() {
 			{/* EMAIL */}
 			<input
 				type="text"
-				className="m-3 rounded-[20px] w-[260px] h-[50px] border-none bg-[var(--color-back)] pl-5 text-sm font-light outline-none"
+				className="m-3 rounded-[20px] w-full max-w-[260px] h-[50px] border-none bg-[var(--color-back)] pl-5 text-sm font-light outline-none"
 				placeholder="email"
 				value={email}
 				onChange={(e) => setEmail(e.target.value)}
 			/>
 
 			{/* PASSWORD */}
-			<div className="relative">
+			<div className="relative w-full max-w-[260px]">
 
 				<input
 					type={showPassword ? "text" : "password"}
-					className="m-3 rounded-[20px] w-[260px] h-[50px] border-none bg-[var(--color-back)] pl-5 text-sm font-light outline-none"
+					className="m-3 rounded-[20px] w-full h-[50px] border-none bg-[var(--color-back)] pl-5 text-sm font-light outline-none"
 					placeholder="password"
 					value={password}
 					onChange={(e) => setPassword(e.target.value)}
@@ -79,7 +78,7 @@ export function Login() {
 
 			{/* BOTÓN */}
 			<button
-				className="m-3 rounded-[20px] w-[260px] h-[50px] border-none bg-[var(--color-accent)] text-[var(--color-font)] text-base font-medium cursor-pointer hover:opacity-90 transition-opacity"
+				className="m-3 rounded-[20px] w-full max-w-[260px] h-[50px] border-none bg-[var(--color-accent)] text-[var(--color-font)] text-base font-medium cursor-pointer hover:opacity-90 transition-opacity"
 				onClick={handleLogin}
 			>
 				INICIAR

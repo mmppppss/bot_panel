@@ -1,4 +1,4 @@
-const API_URL = "http://api.softproject.qzz.io/api/v1/";
+const API_URL = import.meta.env.VITE_API_URL;
 /*
  * Capa de abstraccion para fetch
  * PEticiones de api

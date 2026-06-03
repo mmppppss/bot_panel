@@ -1,18 +1,13 @@
-import { useLocation } from 'preact-iso';
-import { Menu } from '../../components/menu.jsx';
-
+import { useRequireAuth } from "../../hooks/useRequireAuth";
 
 export function Home() {
-	const { route } = useLocation()
-	const token = localStorage.getItem("token")
-	if (!token) {
-		route("/login")
-		return null
-	}
+	const { isAuthenticated } = useRequireAuth();
+
+	if (!isAuthenticated) return null;
 
 	return (
 		<div class="home">
-			<Menu />
+			<h1 className="text-4xl font-light text-[#2f3e36]">Dashboard</h1>
 		</div>
 	);
 }
