@@ -17,6 +17,7 @@ import { AgentsTable } from './pages/agentsTable/index.jsx';
 import { AgentConfig } from './pages/agent-config/index.jsx';
 import { Contacts } from './pages/contacts/index.jsx';
 import { History } from './pages/history/index.jsx';
+import { Knowledge } from './pages/knowledge/index.jsx';
 
 import {
 	NotifyProvider,
@@ -38,6 +39,7 @@ const TITLES = {
 	"/config": "Configuración",
 	"/contacts": "Contactos",
 	"/history": "Historial",
+	"/knowledge": "Conocimiento",
 }
 
 function AppContent() {
@@ -116,6 +118,11 @@ function AppContent() {
 					<Route
 						path="/history"
 						component={() => <PageLayout><History /></PageLayout>}
+					/>
+
+					<Route
+						path="/knowledge"
+						component={() => <PageLayout><Knowledge /></PageLayout>}
 					/>
 
 					<Route

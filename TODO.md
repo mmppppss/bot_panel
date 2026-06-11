@@ -8,3 +8,7 @@
 
 ## Auto-Respuestas (responses)
 - [ ] Endpoint PUT para actualizar una regla (`updateResponse`)
+
+## Base de conocimiento (knowledge)
+- [ ] Endpoint POST para subir datos (`uploadKnowledge`)
+- [ ] Endpoint GET para consultar datos cargados (`getKnowledge`)
