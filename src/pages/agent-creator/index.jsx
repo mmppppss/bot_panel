@@ -158,7 +158,7 @@ export function AgentCreator() {
 			setStep(3);
 		} catch (error) {
 			console.error("Error al crear el agente:", error);
-			notify(err.message, "error");
+			notify(error.message, "error");
 		} finally {
 			setLoading(false);
 		}
@@ -174,7 +174,7 @@ export function AgentCreator() {
 			setStep(4);
 		} catch (error) {
 			console.error("Error al conectar:", error);
-			notify(err.message, "error");
+			notify(error.message, "error");
 		} finally {
 			setLoading(false);
 		}

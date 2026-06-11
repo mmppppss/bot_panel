@@ -3,12 +3,19 @@ import * as XLSX from "xlsx";
 import { useAuth } from "../../contexts/AuthContext";
 import { useRequireAuth } from "../../hooks/useRequireAuth";
 import { useNotify } from "../../components/Notify/NotifyContext";
-import { getAgents, uploadKnowledge } from "../../services/agents";
+import { getAgents, getModules, upsertModule, uploadKnowledge } from "../../services/agents";
 import { Table, TableRow } from "../../components/Table";
 import { LuUpload } from "react-icons/lu";
 
 const HEADERS = ["id", "nombre", "descripcion", "precio", "stock", "fotos", "caracteristicas", "etiquetas"];
 const STEPS = ["Datos", "Previsualizar", "Confirmar", "Listo"];
+const MODELS = [
+	"openrouter/owl-alpha",
+	"nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free",
+	"moonshotai/kimi-k2.6:free",
+	"google/gemma-4-26b-a4b-it:free",
+	"qwen/qwen3-next-80b-a3b-instruct:free"
+];
 
 function normalizeRows(rows) {
 	return rows.map((r) => {
@@ -71,24 +78,37 @@ export function Knowledge() {
 	const { notify } = useNotify();
 
 	const [agents, setAgents] = useState([]);
-	const [agentsLoading, setAgentsLoading] = useState(true);
 	const [selectedAgent, setSelectedAgent] = useState("");
 	const [step, setStep] = useState(1);
 	const [rawRows, setRawRows] = useState([]);
 	const [normalized, setNormalized] = useState([]);
 	const [uploading, setUploading] = useState(false);
+	const [modules, setModules] = useState({});
+	const [plnSaving, setPlnSaving] = useState(false);
 	const fileRef = useRef(null);
 
 	const loadAgents = () => {
 		if (!user?.id) return;
-		setAgentsLoading(true);
 		getAgents(user.id)
 			.then((res) => setAgents(res.data || []))
-			.catch((err) => notify(err.message, "error"))
-			.finally(() => setAgentsLoading(false));
+			.catch((err) => notify(err.message, "error"));
 	};
 
 	useEffect(() => { loadAgents(); }, []);
+
+	useEffect(() => {
+		if (!selectedAgent) {
+			setModules({});
+			return;
+		}
+		getModules(user.id, selectedAgent)
+			.then((res) => {
+				const modMap = {};
+				(res.data || []).forEach((m) => { modMap[m.moduleKey] = m; });
+				setModules(modMap);
+			})
+			.catch((err) => notify(err.message, "error"));
+	}, [selectedAgent]);
 
 	const handleFile = useCallback(async (file) => {
 		if (!file) return;
@@ -157,6 +177,33 @@ export function Knowledge() {
 		setStep(1);
 	};
 
+	const handleModuleConfig = (moduleKey, field, value) => {
+		setModules((prev) => ({
+			...prev,
+			[moduleKey]: {
+				...prev[moduleKey],
+				config: { ...(prev[moduleKey]?.config || {}), [field]: value },
+			},
+		}));
+	};
+
+	const handleSavePLN = async () => {
+		if (!selectedAgent) return;
+		setPlnSaving(true);
+		try {
+			await upsertModule(user.id, selectedAgent, "pln", {
+				enabled: modules.pln?.enabled ?? false,
+				priority: 1,
+				config: modules.pln?.config || {},
+			});
+			notify("Personalidad guardada", "success");
+		} catch (err) {
+			notify(err.message, "error");
+		} finally {
+			setPlnSaving(false);
+		}
+	};
+
 	if (authLoading || !isAuthenticated) return null;
 
 	const renderStepContent = () => {
@@ -164,21 +211,6 @@ export function Knowledge() {
 			case 1:
 				return (
 					<>
-						{/* AGENT SELECTOR */}
-						<div className="mb-6">
-							<label className="text-[#2f3e36] text-sm ml-1 block mb-1.5">Agente</label>
-							<select
-								value={selectedAgent}
-								onChange={(e) => setSelectedAgent(e.target.value)}
-								className="w-full max-w-xs h-10 rounded-xl bg-[#e0e4df] border-none outline-none px-4 text-sm"
-							>
-								<option value="">-- Seleccionar --</option>
-								{agents.map((a) => (
-									<option key={a.id} value={a.id}>{a.name}</option>
-								))}
-							</select>
-						</div>
-
 						{/* DOWNLOAD TEMPLATE */}
 						<button
 							onClick={downloadTemplate}
@@ -321,27 +353,89 @@ export function Knowledge() {
 	return (
 		<div className="min-h-screen flex items-start justify-center px-7 py-8">
 			<div className="w-full max-w-4xl flex gap-6">
-				{/* SIDEBAR */}
-				<div className="hidden md:flex flex-col items-center gap-10 pt-16 w-[125px] min-w-[125px] bg-[#b2b8af] rounded-2xl py-10">
-					{STEPS.map((label, i) => (
-						<div key={i} className="flex flex-col items-center gap-2">
-							<div
-								className={`w-[30px] h-[30px] rounded-full transition-all duration-300 ${step === i + 1 ? "bg-[#2f3e36]" : "bg-[#2f3e36]/30"}`}
-							/>
-							<span className={`text-xs uppercase tracking-wider ${step === i + 1 ? "text-[#2f3e36] font-bold" : "text-[#2f3e36]/40"}`}>
-								{label}
-							</span>
-						</div>
-					))}
-				</div>
 
 				{/* CONTENT */}
 				<div className="flex-1 flex flex-col">
 					<div className="mb-8">
 						<h1 className="text-4xl font-light text-[#2f3e36] text-left">
-							{STEPS[step - 1]}
+							Conocimiento
 						</h1>
 					</div>
+
+					{/* AGENT SELECTOR */}
+					<div className="mb-6 max-w-xs">
+						<label className="text-[#2f3e36] text-sm ml-1 block mb-1.5">Agente</label>
+						<select
+							value={selectedAgent}
+							onChange={(e) => setSelectedAgent(e.target.value)}
+							className="w-full h-10 rounded-xl bg-[#e0e4df] border-none outline-none px-4 text-sm"
+						>
+							<option value="">-- Seleccionar --</option>
+							{agents.map((a) => (
+								<option key={a.id} value={a.id}>{a.name}</option>
+							))}
+						</select>
+					</div>
+
+					{/* PERSONALIDAD */}
+					{selectedAgent && (
+						<div className="bg-[#b2b8af] rounded-2xl p-5 mb-6">
+							<span className="text-[#2f3e36] text-base font-medium block mb-4">Personalidad</span>
+							<div className="flex flex-col gap-4 pl-1">
+								<div className="flex flex-col gap-1.5">
+									<label className="text-[#2f3e36] text-xs ml-1">Personalidad</label>
+									<textarea
+										value={modules.pln?.config?.systemPrompt || ""}
+										onChange={(e) => handleModuleConfig("pln", "systemPrompt", e.target.value)}
+										className="w-full h-20 rounded-xl bg-[#e0e4df] border-none outline-none p-3 text-sm resize-none"
+									/>
+								</div>
+								<div className="flex flex-col gap-1.5">
+									<label className="text-[#2f3e36] text-xs ml-1">Modelo</label>
+									<select
+										value={modules.pln?.config?.model || MODELS[0]}
+										onChange={(e) => handleModuleConfig("pln", "model", e.target.value)}
+										className="w-full h-10 rounded-xl bg-[#e0e4df] border-none outline-none px-3 text-sm"
+									>
+										{MODELS.map((m) => (
+											<option key={m} value={m}>{m}</option>
+										))}
+									</select>
+								</div>
+								<div className="flex justify-start">
+									<button
+										onClick={handleSavePLN}
+										disabled={plnSaving}
+										className="bg-[#3D4A3E] text-[#A18E6E] px-6 py-2 rounded-full uppercase tracking-widest text-xs font-bold shadow-lg hover:bg-[#2f3a30] transition-colors disabled:opacity-50"
+									>
+										{plnSaving ? "Guardando..." : "Guardar personalidad"}
+									</button>
+								</div>
+							</div>
+						</div>
+					)}
+
+					<hr className="border-[#2f3e36]/20 my-6" />
+
+					<div className="flex items-center justify-center mb-6">
+						{STEPS.map((label, i) => (
+							<div key={i} className="flex items-center">
+								{i > 0 && <div className="w-8 h-px bg-[#2f3e36]/20 mx-2" />}
+								<div className="flex items-center gap-1.5">
+									<div
+										className={`w-[18px] h-[18px] rounded-full transition-all duration-300 shrink-0 ${step === i + 1 ? "bg-[#2f3e36]" : "bg-[#2f3e36]/20"}`}
+									/>
+									<span className={`text-[10px] uppercase tracking-wider hidden sm:inline ${step === i + 1 ? "text-[#2f3e36] font-bold" : "text-[#2f3e36]/40"}`}>
+										{label}
+									</span>
+								</div>
+							</div>
+						))}
+					</div>
+
+					<h2 className="text-xl font-light text-[#2f3e36] text-left mb-4">
+						{STEPS[step - 1]}
+					</h2>
 
 					<div className="flex-1">
 						{renderStepContent()}

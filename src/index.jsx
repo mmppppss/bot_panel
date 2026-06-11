@@ -18,6 +18,7 @@ import { AgentConfig } from './pages/agent-config/index.jsx';
 import { Contacts } from './pages/contacts/index.jsx';
 import { History } from './pages/history/index.jsx';
 import { Knowledge } from './pages/knowledge/index.jsx';
+import { AutoReplies } from './pages/auto-replies/index.jsx';
 
 import {
 	NotifyProvider,
@@ -40,6 +41,7 @@ const TITLES = {
 	"/contacts": "Contactos",
 	"/history": "Historial",
 	"/knowledge": "Conocimiento",
+	"/auto-replies": "Auto-Respuestas",
 }
 
 function AppContent() {
@@ -123,6 +125,11 @@ function AppContent() {
 					<Route
 						path="/knowledge"
 						component={() => <PageLayout><Knowledge /></PageLayout>}
+					/>
+
+					<Route
+						path="/auto-replies"
+						component={() => <PageLayout><AutoReplies /></PageLayout>}
 					/>
 
 					<Route

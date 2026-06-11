@@ -7,6 +7,8 @@ import { getAgents, getAgentConfigs, setAgentConfig, deleteAgentConfig } from ".
 import { Table, TableRow } from "../../components/Table";
 import { Modal } from "../../components/Modal";
 
+const BOOLEAN_KEYS = ["save_contacts", "save_messages"];
+
 function EditableCell({ value, onSave }) {
 	const [editing, setEditing] = useState(false);
 	const [draft, setDraft] = useState(value);
@@ -193,23 +195,42 @@ export function AgentConfig() {
 							</div>
 						) : (
 							<Table headers={["Clave", "Valor", ""]} cols={3}>
-								{configs.map((c) => (
-									<TableRow key={c.configKey} cols={3} className="grid-cols-[1fr_1fr_auto]">
-										<span className="text-sm text-[#2f3e36] font-medium">
-											{c.configKey}
-										</span>
-										<EditableCell
-											value={c.configValue}
-											onSave={(val) => handleSetConfig(c.configKey, val)}
-										/>
-										<button
-											onClick={() => setDeleteTarget(c)}
-											className="text-red-600 hover:text-red-800 transition-colors text-sm ml-auto"
-										>
-											Eliminar
-										</button>
-									</TableRow>
-								))}
+								{configs.map((c) => {
+									const isBool = BOOLEAN_KEYS.includes(c.configKey);
+									const boolValue = isBool
+										? c.configValue === true || c.configValue === "true"
+										: false;
+									return (
+										<TableRow key={c.configKey} cols={3} className="grid-cols-[1fr_1fr_auto]">
+											<span className="text-sm text-[#2f3e36] font-medium">
+												{c.configKey}
+											</span>
+											{isBool ? (
+												<button
+													onClick={() => handleSetConfig(c.configKey, !boolValue)}
+													className={`w-14 h-7 rounded-full transition-all duration-300 flex items-center px-1 ${boolValue ? "bg-[#2f3e36]" : "bg-[#d9d9d9]"}`}
+												>
+													<div
+														className={`w-5 h-5 rounded-full bg-white transition-all duration-300 ${boolValue ? "translate-x-7" : ""}`}
+													/>
+												</button>
+											) : (
+												<EditableCell
+													value={c.configValue}
+													onSave={(val) => handleSetConfig(c.configKey, val)}
+												/>
+											)}
+											{!isBool && (
+												<button
+													onClick={() => setDeleteTarget(c)}
+													className="text-red-600 hover:text-red-800 transition-colors text-sm ml-auto"
+												>
+													Eliminar
+												</button>
+											)}
+										</TableRow>
+									);
+								})}
 							</Table>
 						)}
 					</>
