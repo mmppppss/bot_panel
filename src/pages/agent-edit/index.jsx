@@ -3,13 +3,15 @@ import { useLocation, useRoute } from "preact-iso";
 import { useAuth } from "../../contexts/AuthContext";
 import { useRequireAuth } from "../../hooks/useRequireAuth";
 import { useNotify } from "../../components/Notify/NotifyContext";
-import { getAgent, updateAgent, getModules, upsertModule, toggleModule } from "../../services/agents";
+import QRCode from "react-qr-code";
+import { getAgent, updateAgent, getModules, upsertModule, toggleModule, getWhatsappQR, connectTelegram } from "../../services/agents";
 
 const MODELS = [
+	"openrouter/owl-alpha",
 	"nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free",
-	"meta-llama/llama-3.2-3b-instruct:free",
-	"mistralai/mistral-7b-instruct:free",
-	"google/gemini-2.0-flash-exp:free",
+	"moonshotai/kimi-k2.6:free",
+	"google/gemma-4-26b-a4b-it:free",
+	"qwen/qwen3-next-80b-a3b-instruct:free"
 ];
 
 export function AgentEdit() {
@@ -24,6 +26,11 @@ export function AgentEdit() {
 	const [modules, setModules] = useState({});
 	const [loading, setLoading] = useState(true);
 	const [saving, setSaving] = useState(false);
+
+	const [qrCode, setQrCode] = useState("");
+	const [qrLoading, setQrLoading] = useState(false);
+	const [telegramToken, setTelegramToken] = useState("");
+	const [telegramLoading, setTelegramLoading] = useState(false);
 
 	useEffect(() => {
 		if (!user?.id || !id) return;
@@ -94,6 +101,34 @@ export function AgentEdit() {
 			notify(err.message, "error");
 		} finally {
 			setSaving(false);
+		}
+	};
+
+	const handleGetQR = async () => {
+		setQrLoading(true);
+		try {
+			const res = await getWhatsappQR(user.id, id);
+			setQrCode(res.data);
+		} catch (err) {
+			notify(err.message, "error");
+		} finally {
+			setQrLoading(false);
+		}
+	};
+
+	const handleConnectTelegram = async () => {
+		if (!telegramToken.trim()) {
+			notify("El token de Telegram es obligatorio", "error");
+			return;
+		}
+		setTelegramLoading(true);
+		try {
+			await connectTelegram(user.id, id, telegramToken.trim());
+			notify("Telegram conectado", "success");
+		} catch (err) {
+			notify(err.message, "error");
+		} finally {
+			setTelegramLoading(false);
 		}
 	};
 
@@ -204,6 +239,56 @@ export function AgentEdit() {
 									</div>
 								</div>
 							)}
+						</div>
+					</div>
+				</div>
+
+				{/* CONEXIONES */}
+				<div className="mb-8">
+					<div className="flex items-center gap-3 mb-5">
+						<div className="h-px flex-1 bg-[#b2b8af]" />
+						<span className="text-[#2f3e36] text-sm font-medium uppercase tracking-wider">Conexiones</span>
+						<div className="h-px flex-1 bg-[#b2b8af]" />
+					</div>
+
+					<div className="flex flex-col gap-4">
+						{/* WHATSAPP */}
+						<div className="bg-[#b2b8af] rounded-2xl p-5 flex items-center justify-between">
+							<div className="flex flex-col gap-1">
+								<span className="text-[#2f3e36] text-base font-medium text-left">WhatsApp</span>
+								{qrCode && (
+									<div className="bg-white p-2 rounded-lg shadow-sm mt-2 inline-block">
+										<QRCode className="w-32 h-32" value={qrCode} />
+									</div>
+								)}
+							</div>
+							<button
+								onClick={handleGetQR}
+								disabled={qrLoading}
+								className="bg-[#3D4A3E] text-[#A18E6E] px-6 py-2.5 rounded-full uppercase tracking-widest text-xs font-bold shadow-lg hover:bg-[#2f3a30] transition-colors disabled:opacity-50"
+							>
+								{qrLoading ? "Cargando..." : "Obtener QR"}
+							</button>
+						</div>
+
+						{/* TELEGRAM */}
+						<div className="bg-[#b2b8af] rounded-2xl p-5 flex items-center justify-between gap-4">
+							<span className="text-[#2f3e36] text-base font-medium text-left whitespace-nowrap">Telegram</span>
+							<div className="flex items-center gap-3 flex-1 max-w-md">
+								<input
+									value={telegramToken}
+									onInput={(e) => setTelegramToken(e.target.value)}
+									placeholder="Token del bot"
+									className="flex-1 h-10 rounded-full bg-[#e0e4df] px-4 outline-none text-sm border-none"
+								/>
+								<button
+									onClick={handleConnectTelegram}
+									disabled={telegramLoading}
+									className="bg-[#3D4A3E] text-[#A18E6E] px-6 py-2 rounded-full uppercase tracking-widest text-xs font-bold shadow-lg hover:bg-[#2f3a30] transition-colors disabled:opacity-50 whitespace-nowrap"
+								>
+									{telegramLoading ? "Conectando..." : "Conectar"}
+								</button>
+							</div>
 						</div>
 					</div>
 				</div>

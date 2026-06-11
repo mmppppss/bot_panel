@@ -1,15 +1,36 @@
-import { useState, useMemo } from "react"
+import { useState, useMemo, useEffect } from "react"
 import { useLocation } from 'preact-iso';
-import { LuBot, LuBraces, LuListTodo, LuChevronLeft, LuChevronRight } from "react-icons/lu"
+import { LuBraces, LuListTodo, LuSettings, LuUsers, LuHistory, LuBrain, LuMessageSquare, LuChevronLeft, LuChevronRight } from "react-icons/lu"
 import { icon } from "profile-icon"
 import { useAuth } from "../contexts/AuthContext"
+import { getAgents, getModules } from "../services/agents"
 
 export function Menu() {
 
     const [open, setOpen] = useState(false)
     const [showUserMenu, setShowUserMenu] = useState(false)
-    const { route } = useLocation();
+    const { route, path } = useLocation();
     const { user, logout } = useAuth();
+
+    const [showKnowledge, setShowKnowledge] = useState(false)
+    const [showKeywords, setShowKeywords] = useState(false)
+
+    useEffect(() => {
+        if (!user?.id) return
+        getAgents(user.id).then((res) => {
+            const agents = res.data || []
+            const promises = agents.map((a) =>
+                getModules(user.id, a.id)
+                    .then((modRes) => (modRes.data || []).filter((m) => m.enabled).map((m) => m.moduleKey))
+                    .catch(() => [])
+            )
+            Promise.all(promises).then((results) => {
+                const allModules = results.flat()
+                setShowKnowledge(allModules.includes("pln"))
+                setShowKeywords(allModules.includes("keyword"))
+            })
+        }).catch(() => {})
+    }, [user, path])
 
     const avatarUri = useMemo(() => {
         if (!user) return ""
@@ -32,7 +53,6 @@ export function Menu() {
     return (
 
         <>
-            {/* Overlay para cerrar el menú si haces clic fuera */}
             {open && (
                 <div
                     className="fixed inset-0 bg-black/20 z-40"
@@ -42,7 +62,6 @@ export function Menu() {
 
             <div className={`flex flex-col fixed top-0 left-0 h-full bg-[#b2b8af] z-50 transition-all duration-300 ${open ? "w-64" : "w-20"}`}>
 
-                {/* BOTÓN INTERNO PARA ABRIR/CERRAR */}
                 <div
                     className={`flex items-center h-16 cursor-pointer hover:bg-black/5 select-none ${open ? "justify-end pr-5" : "justify-center"}`}
                     onClick={() => setOpen(!open)}
@@ -51,20 +70,6 @@ export function Menu() {
                         <LuChevronLeft className="w-8 h-8 text-[#2f3e36]" />
                     ) : (
                         <LuChevronRight className="w-8 h-8 text-[#2f3e36]" />
-                    )}
-                </div>
-
-                {/* CREAR AGENTE */}
-                <div
-                    onClick={() => route("/create")}
-                    className={`flex items-center gap-4 cursor-pointer hover:bg-black/5 select-none transition-colors ${open ? "p-6" : "justify-center p-4"}`}
-                >
-                    <LuBot className="w-6 h-6 min-w-[24px] text-[#2f3e36]" />
-
-                    {open && (
-                        <span className="text-[#2f3e36] font-medium whitespace-nowrap">
-                            Crear Agente
-                        </span>
                     )}
                 </div>
 
@@ -81,6 +86,21 @@ export function Menu() {
                         </span>
                     )}
                 </div>
+
+                {/* HISTORIAL */}
+                <div
+                    onClick={() => route("/history")}
+                    className={`flex items-center gap-4 cursor-pointer hover:bg-black/5 ${open ? "p-6" : "justify-center p-4"}`}
+                >
+                    <LuHistory className="w-6 h-6 min-w-[24px] text-[#2f3e36]" />
+
+                    {open && (
+                        <span className="text-[#2f3e36] whitespace-nowrap">
+                            Historial
+                        </span>
+                    )}
+                </div>
+
                 {/* AGENTES */}
                 <div
                     onClick={() => route("/agents")}
@@ -94,6 +114,66 @@ export function Menu() {
                         </span>
                     )}
                 </div>
+
+                {/* AUTO-RESPUESTAS (solo si algún agente tiene keyword) */}
+                {showKeywords && (
+                    <div
+                        onClick={() => route("/auto-replies")}
+                        className={`flex items-center gap-4 cursor-pointer hover:bg-black/5 ${open ? "p-6" : "justify-center p-4"}`}
+                    >
+                        <LuMessageSquare className="w-6 h-6 min-w-[24px] text-[#2f3e36]" />
+
+                        {open && (
+                            <span className="text-[#2f3e36] whitespace-nowrap">
+                                Auto-Respuestas
+                            </span>
+                        )}
+                    </div>
+                )}
+
+                {/* CONFIGURACIÓN */}
+                <div
+                    onClick={() => route("/config")}
+                    className={`flex items-center gap-4 cursor-pointer hover:bg-black/5 ${open ? "p-6" : "justify-center p-4"}`}
+                >
+                    <LuSettings className="w-6 h-6 min-w-[24px] text-[#2f3e36]" />
+
+                    {open && (
+                        <span className="text-[#2f3e36] whitespace-nowrap">
+                            Configuración
+                        </span>
+                    )}
+                </div>
+
+                {/* CONTACTOS */}
+                <div
+                    onClick={() => route("/contacts")}
+                    className={`flex items-center gap-4 cursor-pointer hover:bg-black/5 ${open ? "p-6" : "justify-center p-4"}`}
+                >
+                    <LuUsers className="w-6 h-6 min-w-[24px] text-[#2f3e36]" />
+
+                    {open && (
+                        <span className="text-[#2f3e36] whitespace-nowrap">
+                            Contactos
+                        </span>
+                    )}
+                </div>
+
+                {/* BASE DE CONOCIMIENTO (solo si algún agente tiene pln) */}
+                {showKnowledge && (
+                    <div
+                        onClick={() => route("/knowledge")}
+                        className={`flex items-center gap-4 cursor-pointer hover:bg-black/5 ${open ? "p-6" : "justify-center p-4"}`}
+                    >
+                        <LuBrain className="w-6 h-6 min-w-[24px] text-[#2f3e36]" />
+
+                        {open && (
+                            <span className="text-[#2f3e36] whitespace-nowrap">
+                                Conocimiento
+                            </span>
+                        )}
+                    </div>
+                )}
 
                 {/* USUARIO - FOTO + NOMBRE */}
                 <div className="relative mt-auto">

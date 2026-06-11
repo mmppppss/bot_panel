@@ -14,6 +14,11 @@ import { AgentEdit } from './pages/agent-edit/index.jsx';
 import { AgentResponses } from './pages/agent-edit/responses/index.jsx';
 import { Messages } from './pages/messages/index.jsx';
 import { AgentsTable } from './pages/agentsTable/index.jsx';
+import { AgentConfig } from './pages/agent-config/index.jsx';
+import { Contacts } from './pages/contacts/index.jsx';
+import { History } from './pages/history/index.jsx';
+import { Knowledge } from './pages/knowledge/index.jsx';
+import { AutoReplies } from './pages/auto-replies/index.jsx';
 
 import {
 	NotifyProvider,
@@ -32,6 +37,11 @@ const TITLES = {
 	"/create": "Crear agente",
 	"/messages": "Mensajes",
 	"/agents": "Agentes",
+	"/config": "Configuración",
+	"/contacts": "Contactos",
+	"/history": "Historial",
+	"/knowledge": "Conocimiento",
+	"/auto-replies": "Auto-Respuestas",
 }
 
 function AppContent() {
@@ -95,6 +105,31 @@ function AppContent() {
 					<Route
 						path="/agents"
 						component={() => <PageLayout><AgentsTable /></PageLayout>}
+					/>
+
+					<Route
+						path="/config"
+						component={() => <PageLayout><AgentConfig /></PageLayout>}
+					/>
+
+					<Route
+						path="/contacts"
+						component={() => <PageLayout><Contacts /></PageLayout>}
+					/>
+
+					<Route
+						path="/history"
+						component={() => <PageLayout><History /></PageLayout>}
+					/>
+
+					<Route
+						path="/knowledge"
+						component={() => <PageLayout><Knowledge /></PageLayout>}
+					/>
+
+					<Route
+						path="/auto-replies"
+						component={() => <PageLayout><AutoReplies /></PageLayout>}
 					/>
 
 					<Route

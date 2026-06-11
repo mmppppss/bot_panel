@@ -84,3 +84,45 @@ export const updateResponse = async (idAgent, idResponse, data) => {
 	// return apiRequest("agents/" + idAgent + "/responses/" + idResponse, "PUT", data);
 	console.log("updateResponse — pendiente de implementar", { idAgent, idResponse, data });
 };
+
+export const getAgentConfigs = async (idAgent) => {
+	return apiRequest("agents/" + idAgent + "/config", "GET");
+};
+
+export const setAgentConfig = async (idAgent, key, value) => {
+	return apiRequest("agents/" + idAgent + "/config/" + key, "PUT", { value });
+};
+
+export const deleteAgentConfig = async (idAgent, key) => {
+	return apiRequest("agents/" + idAgent + "/config/" + key, "DELETE");
+};
+
+export const getContacts = async (idAgent) => {
+	return apiRequest("agents/" + idAgent + "/contacts", "GET");
+};
+
+export const createContact = async (idAgent, data) => {
+	return apiRequest("agents/" + idAgent + "/contacts", "POST", data);
+};
+
+export const updateContact = async (idAgent, contactId, data) => {
+	return apiRequest("agents/" + idAgent + "/contacts/" + contactId, "PUT", data);
+};
+
+export const deleteContact = async (idAgent, contactId) => {
+	return apiRequest("agents/" + idAgent + "/contacts/" + contactId, "DELETE");
+};
+
+export const getMessages = async (idAgent, limit = 50, offset = 0) => {
+	return apiRequest("agents/" + idAgent + "/messages?limit=" + limit + "&offset=" + offset, "GET");
+};
+
+// TODO: implementar cuando el endpoint esté disponible
+export const uploadKnowledge = async (idAgent, data) => {
+	console.log("uploadKnowledge — pendiente de implementar", { idAgent, data });
+};
+
+export const getKnowledge = async (idAgent) => {
+	console.log("getKnowledge — pendiente de implementar", { idAgent });
+	return [];
+};
