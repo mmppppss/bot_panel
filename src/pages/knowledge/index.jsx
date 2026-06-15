@@ -3,7 +3,7 @@ import * as XLSX from "xlsx";
 import { useAuth } from "../../contexts/AuthContext";
 import { useRequireAuth } from "../../hooks/useRequireAuth";
 import { useNotify } from "../../components/Notify/NotifyContext";
-import { getAgents, getModules, upsertModule, uploadKnowledge } from "../../services/agents";
+import { getAgents, getModules, upsertModule, uploadKnowledge, getKnowledge } from "../../services/agents";
 import { Table, TableRow } from "../../components/Table";
 import { LuUpload } from "react-icons/lu";
 
@@ -45,21 +45,9 @@ function normalizeRows(rows) {
 	});
 }
 
-function downloadTemplate() {
+function rowsToXlsx(rows, filename) {
 	const wb = XLSX.utils.book_new();
-	const ws = XLSX.utils.aoa_to_sheet([
-		HEADERS,
-		[
-			"PROD-001",
-			"Laptop XYZ",
-			"Laptop de última generación",
-			15999.99,
-			25,
-			"https://ejemplo.com/foto1.jpg;https://ejemplo.com/foto2.jpg",
-			"RAM: 16GB\nDisco: 512GB SSD",
-			"electronica,laptop",
-		],
-	]);
+	const ws = XLSX.utils.aoa_to_sheet([HEADERS, ...rows]);
 	ws["!cols"] = HEADERS.map(() => ({ wch: 20 }));
 	XLSX.utils.book_append_sheet(wb, ws, "Productos");
 	const buf = XLSX.write(wb, { bookType: "xlsx", type: "array" });
@@ -67,7 +55,7 @@ function downloadTemplate() {
 	const url = URL.createObjectURL(blob);
 	const a = document.createElement("a");
 	a.href = url;
-	a.download = "plantilla_conocimiento.xlsx";
+	a.download = filename;
 	a.click();
 	URL.revokeObjectURL(url);
 }
@@ -85,6 +73,7 @@ export function Knowledge() {
 	const [uploading, setUploading] = useState(false);
 	const [modules, setModules] = useState({});
 	const [plnSaving, setPlnSaving] = useState(false);
+	const [knowledgeData, setKnowledgeData] = useState(null);
 	const fileRef = useRef(null);
 
 	const loadAgents = () => {
@@ -99,6 +88,7 @@ export function Knowledge() {
 	useEffect(() => {
 		if (!selectedAgent) {
 			setModules({});
+			setKnowledgeData(null);
 			return;
 		}
 		getModules(user.id, selectedAgent)
@@ -107,6 +97,9 @@ export function Knowledge() {
 				(res.data || []).forEach((m) => { modMap[m.moduleKey] = m; });
 				setModules(modMap);
 			})
+			.catch((err) => notify(err.message, "error"));
+		getKnowledge(selectedAgent)
+			.then((res) => setKnowledgeData(res.data || null))
 			.catch((err) => notify(err.message, "error"));
 	}, [selectedAgent]);
 
@@ -163,6 +156,7 @@ export function Knowledge() {
 		try {
 			await uploadKnowledge(selectedAgent, normalized);
 			notify("Datos enviados correctamente", "success");
+			setKnowledgeData((prev) => [...(prev || []), ...normalized]);
 			setStep(4);
 		} catch (err) {
 			notify(err.message, "error");
@@ -175,6 +169,38 @@ export function Knowledge() {
 		setRawRows([]);
 		setNormalized([]);
 		setStep(1);
+	};
+
+	const handleDownloadKnowledge = () => {
+		if (knowledgeData && knowledgeData.length > 0) {
+			const rows = knowledgeData.map((p) => [
+				p.id || "",
+				p.nombre || "",
+				p.descripcion || "",
+				p.precio ?? "",
+				p.stock ?? "",
+				Array.isArray(p.fotos) ? p.fotos.join(";") : p.fotos || "",
+				Array.isArray(p.caracteristicas)
+					? p.caracteristicas.map((c) => c.clave ? c.clave + ": " + c.valor : c.valor).join("\n")
+					: p.caracteristicas || "",
+				Array.isArray(p.etiquetas) ? p.etiquetas.join(",") : p.etiquetas || "",
+			]);
+			rowsToXlsx(rows, "conocimiento_" + selectedAgent + ".xlsx");
+		} else {
+			rowsToXlsx(
+				[[
+					"PROD-001",
+					"Laptop XYZ",
+					"Laptop de última generación",
+					15999.99,
+					25,
+					"https://ejemplo.com/foto1.jpg;https://ejemplo.com/foto2.jpg",
+					"RAM: 16GB\nDisco: 512GB SSD",
+					"electronica,laptop",
+				]],
+				"plantilla_conocimiento.xlsx"
+			);
+		}
 	};
 
 	const handleModuleConfig = (moduleKey, field, value) => {
@@ -211,12 +237,33 @@ export function Knowledge() {
 			case 1:
 				return (
 					<>
-						{/* DOWNLOAD TEMPLATE */}
+						{/* EXISTING KNOWLEDGE */}
+						{knowledgeData && knowledgeData.length > 0 && (
+							<div className="bg-[#b2b8af] rounded-2xl p-5 mb-6">
+								<span className="text-[#2f3e36] text-base font-medium block mb-4">
+									Conocimiento actual ({knowledgeData.length} productos)
+								</span>
+								<div className="max-h-52 overflow-y-auto">
+									<Table headers={["ID", "Nombre", "Precio", "Stock"]} cols={4}>
+										{knowledgeData.map((p, i) => (
+											<TableRow key={i} cols={4} className="grid-cols-[1fr_2fr_1fr_1fr]">
+												<span className="text-sm text-[#2f3e36]">{p.id || "—"}</span>
+												<span className="text-sm text-[#2f3e36] truncate">{p.nombre || "—"}</span>
+												<span className="text-sm text-[#2f3e36]">{p.precio != null ? "$" + p.precio : "—"}</span>
+												<span className="text-sm text-[#2f3e36]">{p.stock != null ? p.stock : "—"}</span>
+											</TableRow>
+										))}
+									</Table>
+								</div>
+							</div>
+						)}
+
+						{/* DOWNLOAD KNOWLEDGE */}
 						<button
-							onClick={downloadTemplate}
+							onClick={handleDownloadKnowledge}
 							className="text-[#A18E6E] text-sm underline hover:opacity-70 transition-opacity mb-6 block"
 						>
-							Descargar plantilla
+							Descargar conocimiento
 						</button>
 
 						{/* UPLOAD AREA */}

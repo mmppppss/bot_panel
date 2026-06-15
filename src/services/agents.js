@@ -117,12 +117,10 @@ export const getMessages = async (idAgent, limit = 50, offset = 0) => {
 	return apiRequest("agents/" + idAgent + "/messages?limit=" + limit + "&offset=" + offset, "GET");
 };
 
-// TODO: implementar cuando el endpoint esté disponible
 export const uploadKnowledge = async (idAgent, data) => {
-	console.log("uploadKnowledge — pendiente de implementar", { idAgent, data });
+	return apiRequest("agents/" + idAgent + "/knowledge/upload", "POST", { data });
 };
 
 export const getKnowledge = async (idAgent) => {
-	console.log("getKnowledge — pendiente de implementar", { idAgent });
-	return [];
+	return apiRequest("agents/" + idAgent + "/knowledge", "GET");
 };
