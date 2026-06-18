@@ -1,6 +1,6 @@
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useRef } from "preact/hooks"
 import { LuPaperclip, LuSendHorizontal } from "react-icons/lu"
-import { getAgents, sendMessage } from "../../services/agents"
+import { getAgents, getContacts, sendMessage } from "../../services/agents"
 import { useAuth } from "../../contexts/AuthContext"
 import { useRequireAuth } from "../../hooks/useRequireAuth"
 
@@ -11,9 +11,11 @@ export function Messages() {
 
     const [message, setMessage] = useState("")
     const [phone, setPhone] = useState("")
+    const [provider, setProvider] = useState("whatsapp")
     const [agents, setAgents] = useState([])
     const [agentsLoading, setAgentsLoading] = useState(true)
     const [selectedAgent, setSelectedAgent] = useState("")
+    const [contacts, setContacts] = useState([])
 
     const [messages, setMessages] = useState([
         {
@@ -33,8 +35,17 @@ export function Messages() {
 			.finally(() => setAgentsLoading(false))
     }, [user])
 
-    const handleSend = async () => {
+    useEffect(() => {
+        if (!selectedAgent) {
+            setContacts([])
+            return
+        }
+        getContacts(selectedAgent)
+            .then((res) => setContacts(res.data || []))
+            .catch(() => setContacts([]))
+    }, [selectedAgent])
 
+    const handleSend = async () => {
         if (message.trim() === "" || phone.trim() === "" || !selectedAgent) return
 
         setMessages([
@@ -46,7 +57,7 @@ export function Messages() {
         ])
 
         try {
-            await sendMessage(user.id, selectedAgent, phone, message)
+            await sendMessage(user.id, selectedAgent, phone, message, provider)
         } catch (error) {
             console.error(error)
         }
@@ -57,12 +68,10 @@ export function Messages() {
 	if (loading || !isAuthenticated) return null
 
     const handleKeyDown = (e) => {
-
         if (e.key === "Enter" && !e.shiftKey) {
             e.preventDefault()
             handleSend()
         }
-
     }
 
 	if (agentsLoading) {
@@ -80,8 +89,8 @@ export function Messages() {
             {/* CHAT PRINCIPAL */}
             <div className="flex-1 flex flex-col">
 
-                {/* BARRA SUPERIOR: AGENTE Y TELÉFONO */}
-                <div className="px-7 pt-4 pb-2 flex gap-3 items-center">
+                {/* BARRA SUPERIOR: AGENTE, CONTACTO, TELÉFONO, PROVIDER */}
+                <div className="px-7 pt-4 pb-2 flex gap-3 items-center flex-wrap">
                     <select
                         value={selectedAgent}
                         onChange={(e) => setSelectedAgent(e.target.value)}
@@ -94,13 +103,40 @@ export function Messages() {
                             </option>
                         ))}
                     </select>
+
+                    <select
+                        value={phone}
+                        onChange={(e) => {
+                            const contact = contacts.find((c) => c.contactId === e.target.value)
+                            setPhone(e.target.value)
+                            if (contact) setProvider(contact.platform)
+                        }}
+                        className="bg-[#E0E4DF] rounded-3xl px-4 py-2 text-sm outline-none text-[#2f3e36]"
+                    >
+                        <option value="">Seleccionar contacto</option>
+                        {contacts.map((c) => (
+                            <option key={c.id || c.contactId} value={c.contactId}>
+                                {c.name || c.contactId} ({c.platform})
+                            </option>
+                        ))}
+                    </select>
+
                     <input
                         type="text"
                         value={phone}
                         onChange={(e) => setPhone(e.target.value)}
-                        placeholder="Número de teléfono"
-                        className="flex-1 bg-[#E0E4DF] rounded-3xl px-4 py-2 outline-none text-[#2f3e36] text-sm"
+                        placeholder="Número de teléfono / ID"
+                        className="flex-1 min-w-[200px] bg-[#E0E4DF] rounded-3xl px-4 py-2 outline-none text-[#2f3e36] text-sm"
                     />
+
+                    <select
+                        value={provider}
+                        onChange={(e) => setProvider(e.target.value)}
+                        className="bg-[#E0E4DF] rounded-3xl px-4 py-2 text-sm outline-none text-[#2f3e36]"
+                    >
+                        <option value="whatsapp">WhatsApp</option>
+                        <option value="telegram">Telegram</option>
+                    </select>
                 </div>
 
                 {/* ÁREA MENSAJES */}

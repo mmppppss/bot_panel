@@ -240,6 +240,19 @@ export function AgentEdit() {
 								</div>
 							)}
 						</div>
+
+						{/* DEVELOPER */}
+						<div className="bg-[#b2b8af] rounded-2xl p-5 flex items-center justify-between">
+							<span className="text-[#2f3e36] text-base font-medium">Developer</span>
+							<button
+								onClick={() => handleModuleToggle("developer", modules.developer?.enabled)}
+								className={`w-14 h-7 rounded-full transition-all duration-300 flex items-center px-1 ${modules.developer?.enabled ? "bg-[#2f3e36]" : "bg-[#d9d9d9]"}`}
+							>
+								<div
+									className={`w-5 h-5 rounded-full bg-white transition-all duration-300 ${modules.developer?.enabled ? "translate-x-7" : ""}`}
+								/>
+							</button>
+						</div>
 					</div>
 				</div>
 

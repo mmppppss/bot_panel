@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect } from "react"
 import { useLocation } from 'preact-iso';
-import { LuBraces, LuListTodo, LuSettings, LuUsers, LuHistory, LuBrain, LuMessageSquare, LuChevronLeft, LuChevronRight } from "react-icons/lu"
+import { LuBraces, LuListTodo, LuSettings, LuUsers, LuHistory, LuBrain, LuMessageSquare, LuCode, LuChevronLeft, LuChevronRight } from "react-icons/lu"
 import { icon } from "profile-icon"
 import { useAuth } from "../contexts/AuthContext"
 import { getAgents, getModules } from "../services/agents"
@@ -14,6 +14,7 @@ export function Menu() {
 
     const [showKnowledge, setShowKnowledge] = useState(false)
     const [showKeywords, setShowKeywords] = useState(false)
+    const [showDeveloper, setShowDeveloper] = useState(false)
 
     useEffect(() => {
         if (!user?.id) return
@@ -28,6 +29,7 @@ export function Menu() {
                 const allModules = results.flat()
                 setShowKnowledge(allModules.includes("pln"))
                 setShowKeywords(allModules.includes("keyword"))
+                setShowDeveloper(allModules.includes("developer"))
             })
         }).catch(() => {})
     }, [user, path])
@@ -73,107 +75,125 @@ export function Menu() {
                     )}
                 </div>
 
-                {/* MENSAJES */}
-                <div
-                    onClick={() => route("/messages")}
-                    className={`flex items-center gap-4 cursor-pointer hover:bg-black/5 ${open ? "p-6" : "justify-center p-4"}`}
-                >
-                    <LuBraces className="w-6 h-6 min-w-[24px] text-[#2f3e36]" />
-
-                    {open && (
-                        <span className="text-[#2f3e36] whitespace-nowrap">
-                            Mensajes
-                        </span>
-                    )}
-                </div>
-
-                {/* HISTORIAL */}
-                <div
-                    onClick={() => route("/history")}
-                    className={`flex items-center gap-4 cursor-pointer hover:bg-black/5 ${open ? "p-6" : "justify-center p-4"}`}
-                >
-                    <LuHistory className="w-6 h-6 min-w-[24px] text-[#2f3e36]" />
-
-                    {open && (
-                        <span className="text-[#2f3e36] whitespace-nowrap">
-                            Historial
-                        </span>
-                    )}
-                </div>
-
-                {/* AGENTES */}
-                <div
-                    onClick={() => route("/agents")}
-                    className={`flex items-center gap-4 cursor-pointer hover:bg-black/5 ${open ? "p-6" : "justify-center p-4"}`}
-                >
-                    <LuListTodo className="w-6 h-6 min-w-[24px] text-[#2f3e36]" />
-
-                    {open && (
-                        <span className="text-[#2f3e36] whitespace-nowrap">
-                            Agentes
-                        </span>
-                    )}
-                </div>
-
-                {/* AUTO-RESPUESTAS (solo si algún agente tiene keyword) */}
-                {showKeywords && (
+                <div className="flex-1 overflow-y-auto">
+                    {/* MENSAJES */}
                     <div
-                        onClick={() => route("/auto-replies")}
+                        onClick={() => route("/messages")}
                         className={`flex items-center gap-4 cursor-pointer hover:bg-black/5 ${open ? "p-6" : "justify-center p-4"}`}
                     >
-                        <LuMessageSquare className="w-6 h-6 min-w-[24px] text-[#2f3e36]" />
+                        <LuBraces className="w-6 h-6 min-w-[24px] text-[#2f3e36]" />
 
                         {open && (
                             <span className="text-[#2f3e36] whitespace-nowrap">
-                                Auto-Respuestas
+                                Mensajes
                             </span>
                         )}
                     </div>
-                )}
 
-                {/* CONFIGURACIÓN */}
-                <div
-                    onClick={() => route("/config")}
-                    className={`flex items-center gap-4 cursor-pointer hover:bg-black/5 ${open ? "p-6" : "justify-center p-4"}`}
-                >
-                    <LuSettings className="w-6 h-6 min-w-[24px] text-[#2f3e36]" />
-
-                    {open && (
-                        <span className="text-[#2f3e36] whitespace-nowrap">
-                            Configuración
-                        </span>
-                    )}
-                </div>
-
-                {/* CONTACTOS */}
-                <div
-                    onClick={() => route("/contacts")}
-                    className={`flex items-center gap-4 cursor-pointer hover:bg-black/5 ${open ? "p-6" : "justify-center p-4"}`}
-                >
-                    <LuUsers className="w-6 h-6 min-w-[24px] text-[#2f3e36]" />
-
-                    {open && (
-                        <span className="text-[#2f3e36] whitespace-nowrap">
-                            Contactos
-                        </span>
-                    )}
-                </div>
-
-                {/* BASE DE CONOCIMIENTO (solo si algún agente tiene pln) */}
-                {showKnowledge && (
+                    {/* HISTORIAL */}
                     <div
-                        onClick={() => route("/knowledge")}
+                        onClick={() => route("/history")}
                         className={`flex items-center gap-4 cursor-pointer hover:bg-black/5 ${open ? "p-6" : "justify-center p-4"}`}
                     >
-                        <LuBrain className="w-6 h-6 min-w-[24px] text-[#2f3e36]" />
+                        <LuHistory className="w-6 h-6 min-w-[24px] text-[#2f3e36]" />
 
                         {open && (
                             <span className="text-[#2f3e36] whitespace-nowrap">
-                                Conocimiento
+                                Historial
                             </span>
                         )}
                     </div>
-                )}
+
+                    {/* AGENTES */}
+                    <div
+                        onClick={() => route("/agents")}
+                        className={`flex items-center gap-4 cursor-pointer hover:bg-black/5 ${open ? "p-6" : "justify-center p-4"}`}
+                    >
+                        <LuListTodo className="w-6 h-6 min-w-[24px] text-[#2f3e36]" />
+
+                        {open && (
+                            <span className="text-[#2f3e36] whitespace-nowrap">
+                                Agentes
+                            </span>
+                        )}
+                    </div>
+
+                    {/* AUTO-RESPUESTAS (solo si algún agente tiene keyword) */}
+                    {showKeywords && (
+                        <div
+                            onClick={() => route("/auto-replies")}
+                            className={`flex items-center gap-4 cursor-pointer hover:bg-black/5 ${open ? "p-6" : "justify-center p-4"}`}
+                        >
+                            <LuMessageSquare className="w-6 h-6 min-w-[24px] text-[#2f3e36]" />
+
+                            {open && (
+                                <span className="text-[#2f3e36] whitespace-nowrap">
+                                    Auto-Respuestas
+                                </span>
+                            )}
+                        </div>
+                    )}
+
+                    {/* CONFIGURACIÓN */}
+                    <div
+                        onClick={() => route("/config")}
+                        className={`flex items-center gap-4 cursor-pointer hover:bg-black/5 ${open ? "p-6" : "justify-center p-4"}`}
+                    >
+                        <LuSettings className="w-6 h-6 min-w-[24px] text-[#2f3e36]" />
+
+                        {open && (
+                            <span className="text-[#2f3e36] whitespace-nowrap">
+                                Configuración
+                            </span>
+                        )}
+                    </div>
+
+                    {/* CONTACTOS */}
+                    <div
+                        onClick={() => route("/contacts")}
+                        className={`flex items-center gap-4 cursor-pointer hover:bg-black/5 ${open ? "p-6" : "justify-center p-4"}`}
+                    >
+                        <LuUsers className="w-6 h-6 min-w-[24px] text-[#2f3e36]" />
+
+                        {open && (
+                            <span className="text-[#2f3e36] whitespace-nowrap">
+                                Contactos
+                            </span>
+                        )}
+                    </div>
+
+                    {/* BASE DE CONOCIMIENTO (solo si algún agente tiene pln) */}
+                    {showKnowledge && (
+                        <div
+                            onClick={() => route("/knowledge")}
+                            className={`flex items-center gap-4 cursor-pointer hover:bg-black/5 ${open ? "p-6" : "justify-center p-4"}`}
+                        >
+                            <LuBrain className="w-6 h-6 min-w-[24px] text-[#2f3e36]" />
+
+                            {open && (
+                                <span className="text-[#2f3e36] whitespace-nowrap">
+                                    Conocimiento
+                                </span>
+                            )}
+                        </div>
+                    )}
+
+                    {/* DESARROLLADOR (solo si algún agente tiene developer) */}
+                    {showDeveloper && (
+                        <div
+                            onClick={() => route("/developer")}
+                            className={`flex items-center gap-4 cursor-pointer hover:bg-black/5 ${open ? "p-6" : "justify-center p-4"}`}
+                        >
+                            <LuCode className="w-6 h-6 min-w-[24px] text-[#2f3e36]" />
+
+                            {open && (
+                                <span className="text-[#2f3e36] whitespace-nowrap">
+                                    Desarrollador
+                                </span>
+                            )}
+                        </div>
+                    )}
+                </div>
 
                 {/* USUARIO - FOTO + NOMBRE */}
                 <div className="relative mt-auto">

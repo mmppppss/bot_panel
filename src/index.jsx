@@ -19,6 +19,7 @@ import { Contacts } from './pages/contacts/index.jsx';
 import { History } from './pages/history/index.jsx';
 import { Knowledge } from './pages/knowledge/index.jsx';
 import { AutoReplies } from './pages/auto-replies/index.jsx';
+import { Developer } from './pages/developer/index.jsx';
 
 import {
 	NotifyProvider,
@@ -42,6 +43,7 @@ const TITLES = {
 	"/history": "Historial",
 	"/knowledge": "Conocimiento",
 	"/auto-replies": "Auto-Respuestas",
+	"/developer": "Desarrollador",
 }
 
 function AppContent() {
@@ -130,6 +132,11 @@ function AppContent() {
 					<Route
 						path="/auto-replies"
 						component={() => <PageLayout><AutoReplies /></PageLayout>}
+					/>
+
+					<Route
+						path="/developer"
+						component={() => <PageLayout><Developer /></PageLayout>}
 					/>
 
 					<Route

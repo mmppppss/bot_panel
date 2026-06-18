@@ -40,11 +40,11 @@ export const connectTelegram = async (id_user, idAgent, apiKey) => {
 	);
 };
 
-export const sendMessage = async (id_user, idAgent, to, text) => {
+export const sendMessage = async (id_user, idAgent, to, text, provider) => {
 	return apiRequest(
 		"user/" + id_user + "/agents/" + idAgent + "/send",
 		"POST",
-		{ to, text },
+		{ provider, to, text },
 	);
 };
 
@@ -123,4 +123,20 @@ export const uploadKnowledge = async (idAgent, data) => {
 
 export const getKnowledge = async (idAgent) => {
 	return apiRequest("agents/" + idAgent + "/knowledge", "GET");
+};
+
+export const getDeveloperKeys = async (idAgent) => {
+	return apiRequest("developer/keys?idAgent=" + idAgent, "GET");
+};
+
+export const createDeveloperKey = async (idAgent, name) => {
+	return apiRequest("developer/keys", "POST", { name, idAgent });
+};
+
+export const revokeDeveloperKey = async (idAgent, idKey) => {
+	return apiRequest("developer/keys/" + idKey + "?idAgent=" + idAgent, "DELETE");
+};
+
+export const getDeveloperLogs = async (idAgent) => {
+	return apiRequest("developer/logs?idAgent=" + idAgent, "GET");
 };

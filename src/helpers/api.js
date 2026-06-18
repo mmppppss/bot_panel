@@ -7,12 +7,12 @@ export const apiRequest = async (
 	endpoint,
 	method = "GET",
 	data = null,
-	token = null,
 ) => {
 	const headers = {
 		"Content-Type": "application/json",
 	};
 
+	const token = localStorage.getItem("token");
 	if (token) {
 		headers["Authorization"] = `Bearer ${token}`;
 	}
