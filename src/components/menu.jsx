@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect } from "react"
 import { useLocation } from 'preact-iso';
-import { LuBraces, LuListTodo, LuSettings, LuUsers, LuHistory, LuBrain, LuMessageSquare, LuCode, LuChevronLeft, LuChevronRight } from "react-icons/lu"
+import { LuMessageCircle, LuListTodo, LuSettings, LuUsers, LuHistory, LuBrain, LuBot, LuCode, LuChevronLeft, LuChevronRight } from "react-icons/lu"
 import { icon } from "profile-icon"
 import { useAuth } from "../contexts/AuthContext"
 import { getAgents, getModules } from "../services/agents"
@@ -81,7 +81,7 @@ export function Menu() {
                         onClick={() => route("/messages")}
                         className={`flex items-center gap-4 cursor-pointer hover:bg-black/5 ${open ? "p-6" : "justify-center p-4"}`}
                     >
-                        <LuBraces className="w-6 h-6 min-w-[24px] text-[#2f3e36]" />
+                        <LuMessageCircle className="w-6 h-6 min-w-[24px] text-[#2f3e36]" />
 
                         {open && (
                             <span className="text-[#2f3e36] whitespace-nowrap">
@@ -124,7 +124,7 @@ export function Menu() {
                             onClick={() => route("/auto-replies")}
                             className={`flex items-center gap-4 cursor-pointer hover:bg-black/5 ${open ? "p-6" : "justify-center p-4"}`}
                         >
-                            <LuMessageSquare className="w-6 h-6 min-w-[24px] text-[#2f3e36]" />
+                            <LuBot className="w-6 h-6 min-w-[24px] text-[#2f3e36]" />
 
                             {open && (
                                 <span className="text-[#2f3e36] whitespace-nowrap">
